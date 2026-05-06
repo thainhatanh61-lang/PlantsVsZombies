@@ -10,9 +10,16 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
     private Random random;
     private Timer timer;
     private int sunPoints=150;
+    private List<Plant> plants;
+    private List<Zombie> zombies;
+    private String selectedPlant = null;
+    private int[][] grid = new int[5][9];
+    private int zombieSpawnTimer = 0;
 
 
     public GamePanel(){
+        plants = new ArrayList<>();
+        zombies = new ArrayList<>();
         suns =new ArrayList<>();
         random = new Random();
         addMouseListener(this);
@@ -33,6 +40,38 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
             if (suns.get(i).isCollected()){
                 suns.remove(i);
                 i--;
+            }
+        }
+        for (int i=0;i<plants.size();i++){
+            plants.get(i).update(zombies,suns);
+            if (plants.get(i).isDead()){
+                int col=(plants.get(i).getX()-80)/90;
+                int row= (plants.get(i).getY()-80)/90;
+                if (row>=0&& row<5&& col>=0&&col<9){
+                    grid[row][col]=0;
+                }
+                plants.remove(i);
+                i--;
+            }
+        }
+        for (int i=0;i <zombies.size();i++) {
+            zombies.get(i).update(plants);
+            if (zombies.get(i).isDead()) {
+                zombies.remove(i);
+                i--;
+            }
+        }
+        zombieSpawnTimer++;
+        if (zombieSpawnTimer>=200){
+            zombieSpawnTimer=0;
+            int row=random.nextInt(5);
+            zombies.add(new Zombie(850,100+row*100));
+        }
+        for (Zombie zombie: zombies){
+            if (zombie.getX()<80){
+                timer.stop();
+                JOptionPane.showMessageDialog(this, "Game Over! Zombies ate your brain!");
+                System.exit(0);
             }
         }
         repaint();
@@ -82,6 +121,17 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 16));
         g.drawString("Sun: "+sunPoints, 740, 35);
+        if (selectedPlant!=null){
+            g.setColor(Color.RED);
+            g.setFont(new Font("Arial",Font.BOLD,14));
+            g.drawString("Selected: " +selectedPlant, 600,55);
+        }
+        for (Plant plant: plants){
+            plant.draw(g);
+        }
+        for (Zombie zombie:zombies){
+            zombie.draw(g);
+        }
         for (Sun sun:suns){
             sun.draw(g);
         }
@@ -97,7 +147,56 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
                 break;
             }
         }
+        if (my>=10&& my<=50){
+            if (mx>=10&& mx<70){
+                selectedPlant="Sunflower";
+                return;
+            }
+            else if(mx>=80&&mx<=140){
+                selectedPlant="Peashooter";  
+                return;  
+            }
+            else if(mx>=150&& mx<=210){
+                selectedPlant="Wallnut";
+                return;
+            }
+        }
+        if (selectedPlant!=null&&mx>=80&&my>=80){
+            int col=(mx-80)/90;
+            int row=(my-80)/100;
+            if (row >= 0 && row < 5 && col >= 0 && col < 9 && grid[row][col] == 0) {
+                Plant plant=null;
+                int cost=0;
+                switch(selectedPlant){
+                    case "Sunflower":
+                        cost=50;
+                        if (sunPoints>=cost){
+                            plant=new Sunflower(80+col*90+45, 80+row*100+50);
+                        }
+                        break;
+                    case "Peashooter":
+                        cost=100;
+                        if (sunPoints>=cost){
+                            plant=new Peashooter(80+col*90+45,80+row*100+50, row);
+                        }
+                        break;
+                    case "Wallnut":
+                        cost = 50;
+                        if (sunPoints >= cost) {
+                            plant = new Wallnut(80 + col*90+45,80+row*100+50);
+                        }
+                        break;
+                }
+                if (plant!=null){
+                    plants.add(plant);
+                    grid[row][col]=1;
+                    sunPoints-=cost;
+                    selectedPlant=null;
+                }
+            }
+        }
     }
+
     @Override public void mousePressed(MouseEvent e){
     }
     @Override public void mouseReleased(MouseEvent e){
