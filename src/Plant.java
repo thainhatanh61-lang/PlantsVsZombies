@@ -13,8 +13,8 @@ public abstract class Plant {
     }
     public abstract void update(List<Zombie> zombies, List<Sun> suns);
     public abstract void draw(Graphics g);
-    public void takeDamege(int damge){
-        health-=damege;
+    public void takeDamege(int damage){
+        health-=damage;
     }
     public int getX() {
         return x;
