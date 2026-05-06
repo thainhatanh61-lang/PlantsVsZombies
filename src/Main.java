@@ -7,6 +7,8 @@ public class Main{
         frame.setSize(900,600);
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
+        GamePanel gamePanel = new GamePanel();
+        frame.add(gamePanel);
         frame.setVisible(true);
     }
 }
