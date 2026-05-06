@@ -26,7 +26,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
             int sx= random.nextInt(800)+80;
             int sy= 0;
             int targetY= 100+random.nextInt(400);
-            suns.add(new Sun(sx,sy, targetY))
+            suns.add(new Sun(sx,sy, targetY));
         }
         for (int i=0;i<suns.size();i++){
             suns.get(i).update();
