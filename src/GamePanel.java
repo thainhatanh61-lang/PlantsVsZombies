@@ -1,17 +1,25 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class GamePanel extends JPanel {
+    private List<Sun> suns;
+    private Random random;
+    public GamePanel(){
+        suns =new ArrayList<>();
+        random = new Random();
+    }
     @Override
-    protected void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g){
         super.paintComponent(g);
         // Draw green lawn background
         g.setColor(new Color(100, 180, 100));
         g.fillRect(0, 0, 900, 600);
         // Draw 5x9 grid
         g.setColor(new Color(0, 100, 0));
-        for (int row = 0; row < 5; row++) {
-            for (int col = 0; col < 9; col++) {
+        for (int row = 0; row < 5; row++){
+            for (int col = 0; col < 9; col++){
                 int x = 80 + col * 90;
                 int y = 80 + row * 100;
                 g.drawRect(x, y, 90, 100);
