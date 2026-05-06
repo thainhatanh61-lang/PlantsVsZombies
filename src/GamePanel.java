@@ -1,14 +1,41 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.List;
 
-public class GamePanel extends JPanel {
+public class GamePanel extends JPanel implements ActionListener, MouseListener{
     private List<Sun> suns;
     private Random random;
+    private Timer timer;
+    private int sunPoints=150;
+
+
     public GamePanel(){
         suns =new ArrayList<>();
         random = new Random();
+        addMouseListener(this);
+        setFocusable(true);
+        timer= new Timer(30,this);
+        timer.start();
+    }
+    @Override
+    public void actionPerformed(ActionEvent e){
+        if (random.nextInt(100)<2){
+            int sx= random.nextInt(800)+80;
+            int sy= 0;
+            int targetY= 100+random.nextInt(400);
+            suns.add(new Sun(sx,sy, targetY))
+        }
+        for (int i=0;i<suns.size();i++){
+            suns.get(i).update();
+            if (suns.get(i).isCollected()){
+                suns.remove(i);
+                i--;
+            }
+        }
+        repaint();
     }
     @Override
     protected void paintComponent(Graphics g){
@@ -55,5 +82,28 @@ public class GamePanel extends JPanel {
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 16));
         g.drawString("Sun: 150", 740, 35);
+        for (Sun sun:suns){
+            sun.draw(g);
+        }
+    }
+    @Override
+    public void mouseClicked(MouseEvent e){
+        int mx= e.getX();
+        int my= e.getY();
+        for (int i=0; i<suns.size(); i++){
+            if (suns.get(i).contains(mx, my)){
+                sunPoints+=25;
+                suns.get(i).collect();
+                break;
+            }
+        }
+    }
+    @Override public void mousePressed(MouseEvent e){
+    }
+    @Override public void mouseReleased(MouseEvent e){
+    }
+    @Override public void mouseEntered(MouseEvent e){
+    }
+    @Override public void mouseExited(MouseEvent e){
     }
 }
