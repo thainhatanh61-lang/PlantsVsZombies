@@ -81,7 +81,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         g.fillOval(700, 10, 30, 30);
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 16));
-        g.drawString("Sun: 150", 740, 35);
+        g.drawString("Sun: "+sunPoints, 740, 35);
         for (Sun sun:suns){
             sun.draw(g);
         }
