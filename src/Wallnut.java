@@ -26,5 +26,6 @@ public class Wallnut extends Plant {
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 10));
         g.drawString("W", x - 5, y + 5);
+        drawHealthBar(g);
     }
 }

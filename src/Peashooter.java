@@ -43,6 +43,7 @@ public class Peashooter extends Plant{
         g.fillRect(x + 10, y - 12, 20, 10);
         g.setColor(Color.GREEN);
         g.fillRect(x - 3, y + 6, 6, 18);
+        drawHealthBar(g);
         for (Pea pea : peas) {
             pea.draw(g);
         }

@@ -7,6 +7,7 @@ public class Zombie {
     private int speed;
     private int attackTimer;
     private boolean dead;
+    private boolean eating;
     public Zombie(int x, int y){
         this(x, y, 100, 1);
     }
@@ -19,11 +20,11 @@ public class Zombie {
         this.dead = false;
     }
     public void update(List<Plant> plants){
-        boolean eating = false;
+        eating = false;
         for (Plant plant : plants){
             if (!plant.isDead() && 
-                Math.abs(y-plant.getY())< 30 && 
-                Math.abs(x- plant.getX()) <25) {
+                Math.abs(y-plant.getY()) <= 35 && 
+                Math.abs(x- plant.getX()) <= 35) {
                 attackTimer++;
                 if (attackTimer >= 60) {
                     plant.takeDamage(10);
@@ -53,8 +54,13 @@ public class Zombie {
         g.fillOval(x + 2, y - 38, 5, 5);
         // Arms
         g.setColor(new Color(110, 110, 110));
-        g.fillRect(x - 20, y - 15, 10, 5);
-        g.fillRect(x + 10, y - 15, 10, 5);
+        if (eating) {
+            g.fillRect(x - 20, y - 22, 10, 5);
+            g.fillRect(x + 10, y - 22, 10, 5);
+        } else {
+            g.fillRect(x - 20, y - 15, 10, 5);
+            g.fillRect(x + 10, y - 15, 10, 5);
+        }
         // Health bar
         g.setColor(Color.RED);
         g.fillRect(x - 15, y - 48, 30, 4);

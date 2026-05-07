@@ -29,5 +29,6 @@ public class Sunflower extends Plant{
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.PLAIN, 8));
         g.drawString("Sun", x - 10, y + 5);
+        drawHealthBar(g);
     }
 }
