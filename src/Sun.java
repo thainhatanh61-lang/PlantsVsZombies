@@ -29,9 +29,11 @@ public class Sun {
     }
     
     public void update(){
-        // Fall down slowly
+        // Move slowly until reaching the target position
         if (y < targetY) {
             y += 2;
+        } else if (y > targetY) {
+            y -= 2;
         }
         // Disappear after some time
         timer++;

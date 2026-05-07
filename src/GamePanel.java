@@ -17,6 +17,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
     private String selectedPlant = null;
     private int[][] grid = new int[5][9];
     private int zombieSpawnTimer = 0;
+    private List<LawnMower> lawnMowers;
     private ImageIcon potatoCardIcon;
     private ImageIcon sunflowerCardIcon;
     private ImageIcon peashooterCardIcon;
@@ -42,6 +43,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         plants = new ArrayList<>();
         zombies = new ArrayList<>();
         suns =new ArrayList<>();
+        lawnMowers = new ArrayList<>();
         random = new Random();
         addMouseListener(this);
         setFocusable(true);
@@ -57,6 +59,9 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         sunflowerCardIcon = sunflowerCardImage != null ? new ImageIcon(sunflowerCardImage) : new ImageIcon();
         peashooterCardIcon = peashooterCardImage != null ? new ImageIcon(peashooterCardImage) : new ImageIcon();
         wallnutCardIcon = wallnutCardImage != null ? new ImageIcon(wallnutCardImage) : new ImageIcon();
+        for (int row = 0; row < GRID_ROWS; row++) {
+            lawnMowers.add(new LawnMower(35, getCellCenterY(row)));
+        }
     }
     @Override
     public void actionPerformed(ActionEvent e){
@@ -92,6 +97,9 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
                 i--;
             }
         }
+        for (LawnMower lawnMower : lawnMowers) {
+            lawnMower.update(zombies);
+        }
         zombieSpawnTimer++;
         if (zombieSpawnTimer>=200){
             zombieSpawnTimer=0;
@@ -109,7 +117,14 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
             }
         }
         for (Zombie zombie: zombies){
-            if (zombie.getX()<10){
+            boolean protectedByMower = false;
+            for (LawnMower lawnMower : lawnMowers) {
+                if (!lawnMower.isUsed() && Math.abs(lawnMower.getY() - zombie.getY()) <= 35) {
+                    protectedByMower = true;
+                    break;
+                }
+            }
+            if (zombie.getX()<10 && !protectedByMower){
                 timer.stop();
                 JOptionPane.showMessageDialog(this, "Game Over! Zombies ate your brain!");
                 System.exit(0);
@@ -203,6 +218,9 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         }
 
         // Draw plants, zombies, suns
+        for (LawnMower lawnMower : lawnMowers) {
+            lawnMower.draw(g);
+        }
         for (Plant plant: plants){
             plant.draw(g);
         }
@@ -232,6 +250,10 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
 
     private int getCellCenterY(int row) {
         return GRID_Y + (int) Math.round(row * GRID_CELL_HEIGHT + GRID_CELL_HEIGHT / 2.0);
+    }
+
+    private boolean hasLawnMowerAtCell(int row, int col) {
+        return col == 0 && !lawnMowers.get(row).isUsed();
     }
 
     @Override
@@ -276,7 +298,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
                             break;
                         }
                     }
-                } else if (grid[row][col] == 0) {
+                } else if (grid[row][col] == 0 && !hasLawnMowerAtCell(row, col)) {
                     Plant plant=null;
                     int cost=0;
                     int centerX = getCellCenterX(col);
