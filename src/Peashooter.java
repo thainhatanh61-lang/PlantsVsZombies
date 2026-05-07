@@ -64,16 +64,15 @@ public class Peashooter extends Plant{
             peas.add(new Pea(x+10,y-5));
         }
         for (int i=0; i<peas.size();i++){
-            peas.get(i).update();
-            boolean hit=false;
+            Pea pea = peas.get(i);
+            pea.update();
             for (Zombie zombie: zombies){
-                if (!zombie.isDead()&& peas.get(i).hits(zombie)){
+                if (!zombie.isDead() && pea.hits(zombie)){
                     zombie.takeDamage(20);
-                    hit =true;
                     break;
                 }
             }
-            if (hit||peas.get(i).isOffScreen()){
+            if (pea.isFinished() || pea.isOffScreen()){
                 peas.remove(i);
                 i--;
             }

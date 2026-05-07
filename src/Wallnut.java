@@ -1,6 +1,5 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import javax.swing.ImageIcon;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +12,7 @@ public class Wallnut extends Plant {
     private int currentState; // 0 = normal, 1 = cracked1, 2 = cracked2
 
     public Wallnut(int x, int y) {
-        super(x, y, 50, 400); // High health
+        super(x, y, 50, 400);
         loadImage();
         currentState = 0;
     }
@@ -64,11 +63,12 @@ public class Wallnut extends Plant {
             return frames;
         }
     }
+
     @Override
     public void draw(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-        
+
         List<BufferedImage> currentFrames = getCurrentFrames();
         if (!currentFrames.isEmpty()) {
             frameIndex %= currentFrames.size();
@@ -79,7 +79,6 @@ public class Wallnut extends Plant {
         if (drawImage != null) {
             g2d.drawImage(drawImage, x - 25, y - 30, 50, 50, null);
         } else {
-            // Fallback draw
             g.setColor(new Color(139, 90, 43));
             g.fillOval(x - 20, y - 28, 40, 45);
             g.setColor(new Color(101, 67, 33));
