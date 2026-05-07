@@ -115,6 +115,12 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         g.drawString("Wall-nut", 152, 32);
         g.drawString("50", 175, 48);
         
+        // Shovel selection box
+        g.setColor(Color.LIGHT_GRAY);
+        g.fillRect(220, 10, 60, 40);
+        g.setColor(Color.BLACK);
+        g.drawString("Shovel", 222, 32);
+        
         // Sun counter
         g.setColor(Color.YELLOW);
         g.fillOval(700, 10, 30, 30);
@@ -160,38 +166,54 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
                 selectedPlant="Wallnut";
                 return;
             }
+            else if(mx>=220&& mx<=280){
+                selectedPlant="Shovel";
+                return;
+            }
         }
         if (selectedPlant!=null&&mx>=80&&my>=80){
             int col=(mx-80)/90;
             int row=(my-80)/100;
-            if (row >= 0 && row < 5 && col >= 0 && col < 9 && grid[row][col] == 0) {
-                Plant plant=null;
-                int cost=0;
-                switch(selectedPlant){
-                    case "Sunflower":
-                        cost=50;
-                        if (sunPoints>=cost){
-                            plant=new Sunflower(80+col*90+45, 80+row*100+50);
+            if (row >= 0 && row < 5 && col >= 0 && col < 9) {
+                if ("Shovel".equals(selectedPlant)) {
+                    for (int i=0; i<plants.size(); i++) {
+                        Plant plant = plants.get(i);
+                        if (plant.getX() == 80 + col*90 + 45 && plant.getY() == 80 + row*100 + 50) {
+                            plants.remove(i);
+                            grid[row][col] = 0;
+                            selectedPlant = null;
+                            break;
                         }
-                        break;
-                    case "Peashooter":
-                        cost=100;
-                        if (sunPoints>=cost){
-                            plant=new Peashooter(80+col*90+45,80+row*100+50, row);
-                        }
-                        break;
-                    case "Wallnut":
-                        cost = 50;
-                        if (sunPoints >= cost) {
-                            plant = new Wallnut(80 + col*90+45,80+row*100+50);
-                        }
-                        break;
-                }
-                if (plant!=null){
-                    plants.add(plant);
-                    grid[row][col]=1;
-                    sunPoints-=cost;
-                    selectedPlant=null;
+                    }
+                } else if (grid[row][col] == 0) {
+                    Plant plant=null;
+                    int cost=0;
+                    switch(selectedPlant){
+                        case "Sunflower":
+                            cost=50;
+                            if (sunPoints>=cost){
+                                plant=new Sunflower(80+col*90+45, 80+row*100+50);
+                            }
+                            break;
+                        case "Peashooter":
+                            cost=100;
+                            if (sunPoints>=cost){
+                                plant=new Peashooter(80+col*90+45,80+row*100+50, row);
+                            }
+                            break;
+                        case "Wallnut":
+                            cost = 50;
+                            if (sunPoints >= cost) {
+                                plant = new Wallnut(80 + col*90+45,80+row*100+50);
+                            }
+                            break;
+                    }
+                    if (plant!=null){
+                        plants.add(plant);
+                        grid[row][col]=1;
+                        sunPoints-=cost;
+                        selectedPlant=null;
+                    }
                 }
             }
         }
