@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
@@ -17,6 +18,9 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
     private int[][] grid = new int[5][9];
     private int zombieSpawnTimer = 0;
     private ImageIcon potatoCardIcon;
+    private ImageIcon sunflowerCardIcon;
+    private ImageIcon peashooterCardIcon;
+    private ImageIcon wallnutCardIcon;
 
 
     public GamePanel(){
@@ -28,8 +32,14 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         setFocusable(true);
         timer= new Timer(30,this);
         timer.start();
-        String cardPath = System.getProperty("user.dir") + "/../resources/graphics/Cards/card_potatomine.png";
-        potatoCardIcon = new ImageIcon(cardPath);
+        BufferedImage potatoCardImage = Plant.loadResourceImage("Cards/card_potatomine.png");
+        BufferedImage sunflowerCardImage = Plant.loadResourceImage("Cards/card_sunflower.png");
+        BufferedImage peashooterCardImage = Plant.loadResourceImage("Cards/card_peashooter.png");
+        BufferedImage wallnutCardImage = Plant.loadResourceImage("Cards/card_wallnut.png");
+        potatoCardIcon = potatoCardImage != null ? new ImageIcon(potatoCardImage) : new ImageIcon();
+        sunflowerCardIcon = sunflowerCardImage != null ? new ImageIcon(sunflowerCardImage) : new ImageIcon();
+        peashooterCardIcon = peashooterCardImage != null ? new ImageIcon(peashooterCardImage) : new ImageIcon();
+        wallnutCardIcon = wallnutCardImage != null ? new ImageIcon(wallnutCardImage) : new ImageIcon();
     }
     @Override
     public void actionPerformed(ActionEvent e){
@@ -103,25 +113,37 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         g.setColor(new Color(139, 90, 43));
         g.fillRect(0, 0, 900, 80);
         // Sunflower selection box
-        g.setColor(Color.YELLOW);
-        g.fillRect(10, 10, 60, 60);
-        g.setColor(Color.BLACK);
-        g.setFont(new Font("Arial", Font.PLAIN, 10));
-        g.drawString("Sunflower", 12, 38);
-        g.drawString("50", 30, 58);
+        if (sunflowerCardIcon.getImage() != null) {
+            g.drawImage(sunflowerCardIcon.getImage(), 10, 10, 60, 60, null);
+        } else {
+            g.setColor(Color.YELLOW);
+            g.fillRect(10, 10, 60, 60);
+            g.setColor(Color.BLACK);
+            g.setFont(new Font("Arial", Font.PLAIN, 10));
+            g.drawString("Sunflower", 12, 38);
+            g.drawString("50", 30, 58);
+        }
         
         // Peashooter selection box
-        g.setColor(Color.GREEN);
-        g.fillRect(80, 10, 60, 60);
-        g.setColor(Color.BLACK);
-        g.drawString("Peashooter", 82, 38);
-        g.drawString("100", 105, 58);
+        if (peashooterCardIcon.getImage() != null) {
+            g.drawImage(peashooterCardIcon.getImage(), 80, 10, 60, 60, null);
+        } else {
+            g.setColor(Color.GREEN);
+            g.fillRect(80, 10, 60, 60);
+            g.setColor(Color.BLACK);
+            g.drawString("Peashooter", 82, 38);
+            g.drawString("100", 105, 58);
+        }
         // Wall-nut selection box
-        g.setColor(new Color(139, 69, 19));
-        g.fillRect(150, 10, 60, 60);
-        g.setColor(Color.WHITE);
-        g.drawString("Wall-nut", 152, 38);
-        g.drawString("50", 175, 58);
+        if (wallnutCardIcon.getImage() != null) {
+            g.drawImage(wallnutCardIcon.getImage(), 150, 10, 60, 60, null);
+        } else {
+            g.setColor(new Color(139, 69, 19));
+            g.fillRect(150, 10, 60, 60);
+            g.setColor(Color.WHITE);
+            g.drawString("Wall-nut", 152, 38);
+            g.drawString("50", 175, 58);
+        }
         
         // PotatoMine selection box
         if (potatoCardIcon.getImage() != null) {

@@ -22,24 +22,37 @@ public class PotatoMine extends Plant {
     }
 
     private void loadImages() {
-        String userDir = System.getProperty("user.dir");
-        String base = userDir + "/../resources/graphics/Plants/PotatoMine";
+        String base = "Plants/PotatoMine";
         
         initFrames = new BufferedImage[1];
-        initFrames[0] = new ImageIcon(base + "/PotatoMineInit/PotatoMineInit_0.png").getImage() instanceof BufferedImage 
-            ? (BufferedImage) new ImageIcon(base + "/PotatoMineInit/PotatoMineInit_0.png").getImage()
-            : toBufferedImage(new ImageIcon(base + "/PotatoMineInit/PotatoMineInit_0.png").getImage());
+        Image initImg = loadResourceImage(base + "/PotatoMineInit/PotatoMineInit_0.png");
+        if (initImg != null) {
+            initFrames[0] = initImg instanceof BufferedImage 
+                ? (BufferedImage) initImg
+                : toBufferedImage(initImg);
+        } else {
+            initFrames[0] = null;
+        }
         
         armedFrames = new BufferedImage[8];
         for (int i = 0; i < 8; i++) {
-            Image img = new ImageIcon(base + "/PotatoMine/PotatoMine_" + i + ".png").getImage();
-            armedFrames[i] = img instanceof BufferedImage ? (BufferedImage) img : toBufferedImage(img);
+            Image img = loadResourceImage(base + "/PotatoMine/PotatoMine_" + i + ".png");
+            if (img != null) {
+                armedFrames[i] = img instanceof BufferedImage ? (BufferedImage) img : toBufferedImage(img);
+            } else {
+                armedFrames[i] = null;
+            }
         }
         
         explodeFrames = new BufferedImage[1];
-        explodeFrames[0] = new ImageIcon(base + "/PotatoMineExplode/PotatoMineExplode_0.png").getImage() instanceof BufferedImage
-            ? (BufferedImage) new ImageIcon(base + "/PotatoMineExplode/PotatoMineExplode_0.png").getImage()
-            : toBufferedImage(new ImageIcon(base + "/PotatoMineExplode/PotatoMineExplode_0.png").getImage());
+        Image explodeImg = loadResourceImage(base + "/PotatoMineExplode/PotatoMineExplode_0.png");
+        if (explodeImg != null) {
+            explodeFrames[0] = explodeImg instanceof BufferedImage
+                ? (BufferedImage) explodeImg
+                : toBufferedImage(explodeImg);
+        } else {
+            explodeFrames[0] = null;
+        }
     }
 
     private BufferedImage toBufferedImage(Image img) {
