@@ -65,7 +65,11 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         if (zombieSpawnTimer>=200){
             zombieSpawnTimer=0;
             int row=random.nextInt(5);
-            zombies.add(new Zombie(850,100+row*100));
+            if (random.nextInt(4) == 0) {
+                zombies.add(new ConeheadZombie(850,100+row*100));
+            } else {
+                zombies.add(new Zombie(850,100+row*100));
+            }
         }
         for (Zombie zombie: zombies){
             if (zombie.getX()<80){

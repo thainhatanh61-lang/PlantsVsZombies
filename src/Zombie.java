@@ -8,10 +8,13 @@ public class Zombie {
     private int attackTimer;
     private boolean dead;
     public Zombie(int x, int y){
+        this(x, y, 100, 1);
+    }
+    protected Zombie(int x, int y, int health, int speed){
         this.x = x;
         this.y = y;
-        this.health = 100;
-        this.speed = 1;
+        this.health = health;
+        this.speed = speed;
         this.attackTimer = 0;
         this.dead = false;
     }
