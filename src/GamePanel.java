@@ -15,6 +15,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
     private String selectedPlant = null;
     private int[][] grid = new int[5][9];
     private int zombieSpawnTimer = 0;
+    private ImageIcon potatoCardIcon;
 
 
     public GamePanel(){
@@ -26,6 +27,8 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         setFocusable(true);
         timer= new Timer(30,this);
         timer.start();
+        String cardPath = System.getProperty("user.dir") + "/../assets/Cards/card_potatomine.png";
+        potatoCardIcon = new ImageIcon(cardPath);
     }
     @Override
     public void actionPerformed(ActionEvent e){
@@ -97,44 +100,55 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         }
         // Draw top selection bar
         g.setColor(new Color(139, 90, 43));
-        g.fillRect(0, 0, 900, 60);
+        g.fillRect(0, 0, 900, 80);
         // Sunflower selection box
         g.setColor(Color.YELLOW);
-        g.fillRect(10, 10, 60, 40);
+        g.fillRect(10, 10, 60, 60);
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.PLAIN, 10));
-        g.drawString("Sunflower", 12, 32);
-        g.drawString("50", 30, 48);
+        g.drawString("Sunflower", 12, 38);
+        g.drawString("50", 30, 58);
         
         // Peashooter selection box
         g.setColor(Color.GREEN);
-        g.fillRect(80, 10, 60, 40);
+        g.fillRect(80, 10, 60, 60);
         g.setColor(Color.BLACK);
-        g.drawString("Peashooter", 82, 32);
-        g.drawString("100", 105, 48);
+        g.drawString("Peashooter", 82, 38);
+        g.drawString("100", 105, 58);
         // Wall-nut selection box
         g.setColor(new Color(139, 69, 19));
-        g.fillRect(150, 10, 60, 40);
+        g.fillRect(150, 10, 60, 60);
         g.setColor(Color.WHITE);
-        g.drawString("Wall-nut", 152, 32);
-        g.drawString("50", 175, 48);
+        g.drawString("Wall-nut", 152, 38);
+        g.drawString("50", 175, 58);
+        
+        // PotatoMine selection box
+        if (potatoCardIcon.getImage() != null) {
+            g.drawImage(potatoCardIcon.getImage(), 220, 10, 60, 60, null);
+        } else {
+            g.setColor(new Color(160, 82, 45));
+            g.fillRect(220, 10, 60, 60);
+            g.setColor(Color.WHITE);
+            g.drawString("PotatoMine", 222, 38);
+            g.drawString("25", 245, 58);
+        }
         
         // Shovel selection box
         g.setColor(Color.LIGHT_GRAY);
-        g.fillRect(220, 10, 60, 40);
+        g.fillRect(290, 10, 60, 60);
         g.setColor(Color.BLACK);
-        g.drawString("Shovel", 222, 32);
+        g.drawString("Shovel", 292, 38);
         
         // Sun counter
         g.setColor(Color.YELLOW);
-        g.fillOval(700, 10, 30, 30);
+        g.fillOval(700, 20, 30, 30);
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 16));
-        g.drawString("Sun: "+sunPoints, 740, 35);
+        g.drawString("Sun: "+sunPoints, 740, 45);
         if (selectedPlant!=null){
             g.setColor(Color.RED);
             g.setFont(new Font("Arial",Font.BOLD,14));
-            g.drawString("Selected: " +selectedPlant, 600,55);
+            g.drawString("Selected: " +selectedPlant, 600,70);
         }
         for (Plant plant: plants){
             plant.draw(g);
@@ -157,7 +171,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
                 break;
             }
         }
-        if (my>=10&& my<=50){
+        if (my>=10&& my<=70){
             if (mx>=10&& mx<70){
                 selectedPlant="Sunflower";
                 return;
@@ -170,7 +184,11 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
                 selectedPlant="Wallnut";
                 return;
             }
-            else if(mx>=220&& mx<=280){
+            else if(mx>=220&&mx<=280){
+                selectedPlant="PotatoMine";
+                return;
+            }
+            else if(mx>=290&& mx<=350){
                 selectedPlant="Shovel";
                 return;
             }
@@ -209,6 +227,12 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
                             cost = 50;
                             if (sunPoints >= cost) {
                                 plant = new Wallnut(80 + col*90+45,80+row*100+50);
+                            }
+                            break;
+                        case "PotatoMine":
+                            cost = 25;
+                            if (sunPoints >= cost) {
+                                plant = new PotatoMine(80 + col*90+45,80+row*100+50);
                             }
                             break;
                     }
