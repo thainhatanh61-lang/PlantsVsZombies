@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.List;
@@ -27,7 +28,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         setFocusable(true);
         timer= new Timer(30,this);
         timer.start();
-        String cardPath = System.getProperty("user.dir") + "/../assets/Cards/card_potatomine.png";
+        String cardPath = System.getProperty("user.dir") + "/../resources/graphics/Cards/card_potatomine.png";
         potatoCardIcon = new ImageIcon(cardPath);
     }
     @Override

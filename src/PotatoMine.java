@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
+import java.io.File;
 import java.util.List;
 
 public class PotatoMine extends Plant {
@@ -21,7 +22,8 @@ public class PotatoMine extends Plant {
     }
 
     private void loadImages() {
-        String base = System.getProperty("user.dir") + "/../assets/Plants_PotatoMine";
+        String userDir = System.getProperty("user.dir");
+        String base = userDir + "/../resources/graphics/Plants/PotatoMine";
         
         initFrames = new BufferedImage[1];
         initFrames[0] = new ImageIcon(base + "/PotatoMineInit/PotatoMineInit_0.png").getImage() instanceof BufferedImage 
