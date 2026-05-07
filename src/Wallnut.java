@@ -1,33 +1,67 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Wallnut extends Plant {
-    private BufferedImage[] frames;
+    private List<BufferedImage> frames;
+    private List<BufferedImage> cracked1Frames;
+    private List<BufferedImage> cracked2Frames;
     private int frameIndex;
     private int frameTimer;
-    private BufferedImage image;
+    private int currentState; // 0 = normal, 1 = cracked1, 2 = cracked2
 
     public Wallnut(int x, int y) {
         super(x, y, 50, 400); // High health
         loadImage();
+        currentState = 0;
     }
 
     private void loadImage() {
-        frames = new BufferedImage[16];
-        for (int i = 0; i < frames.length; i++) {
-            frames[i] = loadResourceImage("Plants/WallNut/WallNut/WallNut_" + i + ".png");
+        frames = loadFrames("Plants/WallNut/WallNut/WallNut_");
+        cracked1Frames = loadFrames("Plants/WallNut/WallNut_cracked1/WallNut_cracked1_");
+        cracked2Frames = loadFrames("Plants/WallNut/WallNut_cracked2/WallNut_cracked2_");
+    }
+
+    private List<BufferedImage> loadFrames(String basePath) {
+        List<BufferedImage> result = new ArrayList<>();
+        for (int i = 0; i < 16; i++) {
+            BufferedImage img = loadResourceImage(basePath + i + ".png");
+            if (img == null) {
+                break;
+            }
+            result.add(img);
         }
-        image = frames[0];
+        return result;
     }
 
     @Override
     public void update(List<Zombie> zombies, List<Sun> suns) {
-        frameTimer++;
-        if (frameTimer >= 2) {
+        int newState = health <= maxHealth / 3 ? 2 : (health <= (maxHealth * 2) / 3 ? 1 : 0);
+        if (newState != currentState) {
+            currentState = newState;
+            frameIndex = 0;
             frameTimer = 0;
-            frameIndex = (frameIndex + 1) % frames.length;
+        }
+
+        List<BufferedImage> currentFrames = getCurrentFrames();
+        if (!currentFrames.isEmpty()) {
+            frameTimer++;
+            if (frameTimer >= 2) {
+                frameTimer = 0;
+                frameIndex = (frameIndex + 1) % currentFrames.size();
+            }
+        }
+    }
+
+    private List<BufferedImage> getCurrentFrames() {
+        if (currentState == 2) {
+            return cracked2Frames;
+        } else if (currentState == 1) {
+            return cracked1Frames;
+        } else {
+            return frames;
         }
     }
     @Override
@@ -35,7 +69,13 @@ public class Wallnut extends Plant {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         
-        BufferedImage drawImage = frames != null && frames[frameIndex] != null ? frames[frameIndex] : image;
+        List<BufferedImage> currentFrames = getCurrentFrames();
+        if (!currentFrames.isEmpty()) {
+            frameIndex %= currentFrames.size();
+        } else {
+            frameIndex = 0;
+        }
+        BufferedImage drawImage = !currentFrames.isEmpty() ? currentFrames.get(frameIndex) : null;
         if (drawImage != null) {
             g2d.drawImage(drawImage, x - 25, y - 30, 50, 50, null);
         } else {
