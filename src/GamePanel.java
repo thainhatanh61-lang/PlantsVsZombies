@@ -127,8 +127,13 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
             }
             if (zombie.getX()<10 && !protectedByMower){
                 timer.stop();
-                JOptionPane.showMessageDialog(this, "Game Over! Zombies ate your brain!");
-                System.exit(0);
+                int choice= JOptionPane.showConfirmDialog(this,"Game Over! Zombies ate your brain!\n\nDo you want to go back to the Menu?", "Game Over", JOptionPane.YES_NO_CANCEL_OPTION);
+                if (choice== JOptionPane.YES_OPTION){
+                    returnToMenu();
+                }
+                else{
+                    System.exit(0);
+                }
             }
         }
         repaint();
@@ -344,5 +349,12 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
     @Override public void mouseEntered(MouseEvent e){
     }
     @Override public void mouseExited(MouseEvent e){
+    }
+    public void returnToMenu(){
+        JFrame frame= (JFrame) SwingUtilities.getWindowAncestor(this);
+        frame.getContentPane().removeAll();
+        frame.add(new MenuPanel(frame));
+        frame.revalidate();
+        frame.repaint();
     }
 }
