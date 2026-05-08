@@ -32,8 +32,14 @@ public class Sun {
         // Move slowly until reaching the target position
         if (y < targetY) {
             y += 2;
+            if (y > targetY) {
+                y = targetY;
+            }
         } else if (y > targetY) {
             y -= 2;
+            if (y < targetY) {
+                y = targetY;
+            }
         }
         // Disappear after some time
         timer++;

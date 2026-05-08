@@ -65,7 +65,7 @@ public abstract class Plant {
         g.setColor(Color.RED);
         g.fillRect(x - 20, y - 55, barWidth, 5);
         g.setColor(Color.GREEN);
-        g.fillRect(x - 20, y - 55, filled, 5);
+        g.fillRect(x - 20, y - 55, Math.max(filled, 0), 5);
     }
     public void takeDamage(int damage){
         health-=damage;
