@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.List;
+import javax.swing.JButton;
 
 public class GamePanel extends JPanel implements ActionListener, MouseListener{
     private List<Sun> suns;
@@ -24,6 +25,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
     private ImageIcon wallnutCardIcon;
     private BufferedImage backgroundImage;
     private BufferedImage chooserBackground;
+    private JButton bMenu;
 
     // Background crop: source rect in the 1400x600 image
     private static final int BG_SRC_X = 230;
@@ -63,6 +65,23 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         for (int row = 0; row < GRID_ROWS; row++) {
             lawnMowers.add(new LawnMower(LAWN_MOWER_X, getCellCenterY(row)));
         }
+        bMenu =new JButton("MENU");
+        bMenu.setBounds(780,10,100,35);
+        bMenu.setFont(new Font("Arial", Font.BOLD,14));
+        bMenu.setBackground(new Color(139,69,19));
+        bMenu.setForeground(Color.WHITE);
+        bMenu.setFocusPainted(false);
+        bMenu.setBorder(BorderFactory.createRaisedBevelBorder());
+        bMenu.addActionListener(e-> returnToMenu());
+        bMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+          public void mouseEntered(java.awt.event.MouseEvent evt){
+            bMenu.setBackground(new Color(205,133,63));
+          }  
+          public void mouseExited(java.awt.event.MouseEvent evt){
+            bMenu.setBackground(new Color(139,69,19));
+          }
+        });
+        this.add(bMenu);
     }
     @Override
     public void actionPerformed(ActionEvent e){
@@ -352,9 +371,11 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
     }
     public void returnToMenu(){
         JFrame frame= (JFrame) SwingUtilities.getWindowAncestor(this);
-        frame.getContentPane().removeAll();
-        frame.add(new MenuPanel(frame));
-        frame.revalidate();
-        frame.repaint();
+        if (frame!=null){
+            frame.getContentPane().removeAll();
+            frame.add(new MenuPanel(frame));
+            frame.revalidate();
+            frame.repaint();
+        }
     }
 }
