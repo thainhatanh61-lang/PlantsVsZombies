@@ -58,5 +58,6 @@ Requirements
 - IntelliJ IDEA / Eclipse / VS Code
 
 Steps
-1. Clone the repository:
-   "git clone https://github.com/thainhatanh61-lang/PlantsVsZombies.git"
+Clone the repository:
+   ```bash
+   git clone https://github.com/thainhatanh61-lang/PlantsVsZombies.git
