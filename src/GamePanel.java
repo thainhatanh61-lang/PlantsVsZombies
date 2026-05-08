@@ -30,12 +30,13 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
     private static final int BG_SRC_END_X = 1130;
 
     // Grid aligned to the yard cells in the cropped background
-    private static final int GRID_X = 23;
+    private static final int GRID_X = 110;
     private static final int GRID_Y = 86;
     private static final int GRID_COLUMNS = 9;
     private static final int GRID_ROWS = 5;
-    private static final int GRID_WIDTH = 843;
-    private static final int GRID_HEIGHT = 489;
+    private static final int GRID_WIDTH = 700;
+    private static final int GRID_HEIGHT = 455;
+    private static final int LAWN_MOWER_X = GRID_X - 55;
     private static final double GRID_CELL_WIDTH = GRID_WIDTH / (double) GRID_COLUMNS;
     private static final double GRID_CELL_HEIGHT = GRID_HEIGHT / (double) GRID_ROWS;
 
@@ -60,7 +61,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         peashooterCardIcon = peashooterCardImage != null ? new ImageIcon(peashooterCardImage) : new ImageIcon();
         wallnutCardIcon = wallnutCardImage != null ? new ImageIcon(wallnutCardImage) : new ImageIcon();
         for (int row = 0; row < GRID_ROWS; row++) {
-            lawnMowers.add(new LawnMower(35, getCellCenterY(row)));
+            lawnMowers.add(new LawnMower(LAWN_MOWER_X, getCellCenterY(row)));
         }
     }
     @Override
@@ -252,10 +253,6 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         return GRID_Y + (int) Math.round(row * GRID_CELL_HEIGHT + GRID_CELL_HEIGHT / 2.0);
     }
 
-    private boolean hasLawnMowerAtCell(int row, int col) {
-        return col == 0 && !lawnMowers.get(row).isUsed();
-    }
-
     @Override
     public void mouseClicked(MouseEvent e){
         int mx= e.getX();
@@ -298,7 +295,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
                             break;
                         }
                     }
-                } else if (grid[row][col] == 0 && !hasLawnMowerAtCell(row, col)) {
+                } else if (grid[row][col] == 0) {
                     Plant plant=null;
                     int cost=0;
                     int centerX = getCellCenterX(col);
