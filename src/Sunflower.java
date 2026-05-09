@@ -52,7 +52,7 @@ public class Sunflower extends Plant{
     @Override
     public void update(List<Zombie> zombies, List<Sun> suns){
         timer++;
-        if (timer>=800){
+        if (timer>=500){
             timer=0;
             suns.add(new Sun(x,y,y-40));
         }

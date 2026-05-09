@@ -25,7 +25,7 @@ public class SunshroomPlant extends Plant {
     public void update(List<Zombie> zombies, List<Sun> suns) {
         ageTimer++;
         sunTimer++;
-        if (sunTimer >= 800) {
+        if (sunTimer >= 500) {
             sunTimer = 0;
             int value = 15;
             if (ageTimer >= 2400) {
