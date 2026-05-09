@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.awt.event.*;
 
 public class MenuPanel extends JPanel{
@@ -18,6 +19,23 @@ public class MenuPanel extends JPanel{
         backgroundImage = Plant.loadResourceImage("Screen/MainMenu.png");
         adventureImage = Plant.loadResourceImage("Screen/Adventure_0.png");
         adventureHoverImage = Plant.loadResourceImage("Screen/Adventure_1.png");
+        // Brighten adventure_1 to match adventure_0 if it's too gray
+        if (adventureHoverImage instanceof BufferedImage) {
+            BufferedImage bi = (BufferedImage) adventureHoverImage;
+            for (int y = 0; y < bi.getHeight(); y++) {
+                for (int x = 0; x < bi.getWidth(); x++) {
+                    int argb = bi.getRGB(x, y);
+                    int a = (argb >> 24) & 0xFF;
+                    int r = (argb >> 16) & 0xFF;
+                    int g = (argb >> 8) & 0xFF;
+                    int b = argb & 0xFF;
+                    r = Math.min(255, (int)(r * 1.2));
+                    g = Math.min(255, (int)(g * 1.2));
+                    b = Math.min(255, (int)(b * 1.2));
+                    bi.setRGB(x, y, (a << 24) | (r << 16) | (g << 8) | b);
+                }
+            }
+        }
         adventureButton = new Rectangle(450, 80, 360, 100);
         adventureNightButton = new Rectangle(440, 200, 360, 100);
 

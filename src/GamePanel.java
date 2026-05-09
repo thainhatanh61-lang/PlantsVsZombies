@@ -575,6 +575,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
         }
     }
     public void returnToMenu(){
+        if (timer != null) timer.stop();
         JFrame frame= (JFrame) SwingUtilities.getWindowAncestor(this);
         if (frame!=null){
             frame.getContentPane().removeAll();

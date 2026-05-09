@@ -52,9 +52,11 @@ public class MushroomShooterPlant extends Plant {
         cowering = false;
         boolean hasZombieInRow = false;
         for (Zombie zombie : zombies) {
-            if (!zombie.isDead() && Math.abs(zombie.getY() - y) <= 35 && zombie.getX() > x) {
-                hasZombieInRow = true;
-                if (scaredy && zombie.getX() - x <= 240) {
+            if (!zombie.isDead() && Math.abs(zombie.getY() - y) <= 35) {
+                if (zombie.getX() > x) {
+                    hasZombieInRow = true;
+                }
+                if (scaredy && Math.abs(zombie.getX() - x) <= 160) {
                     cowering = true;
                 }
             }
@@ -107,5 +109,12 @@ public class MushroomShooterPlant extends Plant {
         for (MushroomProjectile shot : shots) {
             shot.draw(g);
         }
+    }
+    @Override
+    public boolean canBeEaten() {
+        if (scaredy && cowering) {
+            return false;
+        }
+        return super.canBeEaten();
     }
 }
