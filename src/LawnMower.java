@@ -23,7 +23,7 @@ public class LawnMower {
         this.active = false;
         this.used = false;
         image = Plant.loadResourceImage("Screen/car.png");
-        activatedEffect = new ImageIcon("resources/graphics/Effects/lawnmowneractivated.gif");
+        activatedEffect = new ImageIcon("resources/graphics/Screen/lawnmowerActivated.gif");
     }
 
     public void update(List<Zombie> zombies) {

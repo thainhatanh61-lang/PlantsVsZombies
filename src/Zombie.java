@@ -51,7 +51,7 @@ public class Zombie {
         this.lostHead = false;
         this.dying = false;
         loadImages();
-        burnImage = Plant.loadResourceImage("Effects/burntZombie.gif");
+        burnImage = Plant.loadResourceImage("Screen/burntZombie.gif");
         iceTrapImage = Plant.loadResourceImage("Plants/IceShroom/IceShroomTrap/IceShroomTrap_0.png");
     }
 

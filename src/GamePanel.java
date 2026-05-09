@@ -69,7 +69,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
         timer.start();
         setupPlantRoster();
         loadCardIcons();
-        shovelImage = Plant.loadResourceImage("UI/shovel.jpg");
+        shovelImage = Plant.loadResourceImage("Screen/Shovel.jpg");
         if ("night".equals(gameMode)) {
             backgroundImage = Plant.loadResourceImage("Items/Background/Background_1.jpg");
         } else {
@@ -115,11 +115,31 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
         plantMoveIcons = new ImageIcon[plantNames.length];
         plantCooldowns = new int[plantNames.length];
         for (int i = 0; i < plantNames.length; i++) {
-            BufferedImage cardImage = Plant.loadResourceImage("UI/SeedChooser/Cards/" + plantNames[i] + "_card.png");
-            BufferedImage moveImage = Plant.loadResourceImage("UI/SeedChooser/Cards/" + plantNames[i] + "_card_move.png");
+            String cardName = getCardFileName(plantNames[i]);
+            BufferedImage cardImage = Plant.loadResourceImage("Cards/" + cardName + ".png");
+            BufferedImage moveImage = Plant.loadResourceImage("Cards/" + cardName + "_move.png");
             plantCardIcons[i] = cardImage != null ? new ImageIcon(cardImage) : new ImageIcon();
             plantMoveIcons[i] = moveImage != null ? new ImageIcon(moveImage) : plantCardIcons[i];
         }
+    }
+
+    private String getCardFileName(String plantName) {
+        switch (plantName) {
+            case "Sunflower": return "card_sunflower";
+            case "Peashooter": return "card_peashooter";
+            case "Wallnut": return "card_wallnut";
+            case "PotatoMine": return "card_potatomine";
+            case "Jalapeno": return "card_jalapeno";
+            case "Chomper": return "card_chomper";
+            case "CherryBomb": return "card_cherrybomb";
+            case "Spikeweed": return "card_spikeweed";
+            case "Sunshroom": return "card_sunshroom";
+            case "Puffshroom": return "card_puffshroom";
+            case "Scaredyshroom": return "card_scaredyshroom";
+            case "Iceshroom": return "card_iceshroom";
+            case "Hypnoshroom": return "card_hypnoshroom";
+        }
+        return "";
     }
     @Override
     public void actionPerformed(ActionEvent e){

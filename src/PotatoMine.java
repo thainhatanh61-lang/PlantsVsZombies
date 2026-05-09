@@ -27,19 +27,13 @@ public class PotatoMine extends Plant {
         
         initFrames = new BufferedImage[4];
         for (int i = 0; i < 4; i++) {
-            Image img = loadResourceImage(base + "/unarmed/PotatoMineUnarmed_" + i + ".png");
-            if (img == null) {
-                img = loadResourceImage(base + "/PotatoMineInit/PotatoMineInit_0.png");
-            }
+            Image img = loadResourceImage(base + "/PotatoMineInit/PotatoMineInit_0.png");
             initFrames[i] = img instanceof BufferedImage ? (BufferedImage) img : (img != null ? toBufferedImage(img) : null);
         }
         
         armedFrames = new BufferedImage[4];
         for (int i = 0; i < 4; i++) {
-            Image img = loadResourceImage(base + "/armed/PotatoMineArmed_" + i + ".png");
-            if (img == null) {
-                img = loadResourceImage(base + "/PotatoMine/PotatoMine_" + i + ".png");
-            }
+            Image img = loadResourceImage(base + "/PotatoMine/PotatoMine_" + i + ".png");
             armedFrames[i] = img instanceof BufferedImage ? (BufferedImage) img : (img != null ? toBufferedImage(img) : null);
         }
         
