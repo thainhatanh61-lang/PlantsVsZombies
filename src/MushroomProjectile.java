@@ -16,7 +16,7 @@ public class MushroomProjectile {
         this.y = y;
         frames = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            BufferedImage img = Plant.loadResourceImage("Plants/mushroom_bullet/mushroom_bullet_" + i + ".png");
+            BufferedImage img = Plant.loadResourceImage("Bullets/BulletMushRoom/BulletMushRoom_" + i + ".png");
             if (img != null) {
                 frames.add(img);
             }

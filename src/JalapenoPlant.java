@@ -24,7 +24,7 @@ public class JalapenoPlant extends Plant {
                 idleFrames.add(img);
             }
         }
-        fireImage = loadResourceImage("Effects/jalapenoFire.gif");
+        fireImage = loadResourceImage("Screen/jalapenoFire.gif");
     }
 
     @Override
