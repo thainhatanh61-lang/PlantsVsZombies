@@ -11,12 +11,13 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
     private List<Sun> suns;
     private Random random;
     private Timer timer;
-    private int sunPoints=150;
+    private int sunPoints=100;
     private List<Plant> plants;
     private List<Zombie> zombies;
     private String selectedPlant = null;
     private int[][] grid = new int[5][9];
     private int zombieSpawnTimer = 0;
+    private int skySunTimer = 0;
     private List<LawnMower> lawnMowers;
     private ImageIcon potatoCardIcon;
     private ImageIcon sunflowerCardIcon;
@@ -66,11 +67,13 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
     }
     @Override
     public void actionPerformed(ActionEvent e){
-        if (random.nextInt(100)<2){
+        skySunTimer++;
+        if (skySunTimer >= 500 && countSkySuns() < 3){
+            skySunTimer = 0;
             int sx= random.nextInt(800)+80;
             int sy= 0;
             int targetY= 100+random.nextInt(400);
-            suns.add(new Sun(sx,sy, targetY));
+            suns.add(new Sun(sx,sy, targetY, true));
         }
         for (int i=0;i<suns.size();i++){
             suns.get(i).update();
@@ -251,6 +254,16 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
 
     private int getCellCenterY(int row) {
         return GRID_Y + (int) Math.round(row * GRID_CELL_HEIGHT + GRID_CELL_HEIGHT / 2.0);
+    }
+
+    private int countSkySuns() {
+        int count = 0;
+        for (Sun sun : suns) {
+            if (sun.isSkySun()) {
+                count++;
+            }
+        }
+        return count;
     }
 
     @Override
