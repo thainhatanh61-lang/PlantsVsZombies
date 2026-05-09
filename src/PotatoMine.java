@@ -14,7 +14,7 @@ public class PotatoMine extends Plant {
     private static final int EXPLOSION_RADIUS = 80;
 
     public PotatoMine(int x, int y) {
-        super(x, y, 25, 100);
+        super(x, y, 25, 1);
         this.stage = 0;
         this.stageTimer = 0;
         this.exploded = false;

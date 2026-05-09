@@ -13,7 +13,7 @@ public class Peashooter extends Plant{
     private int frameTimer;
 
     public Peashooter(int x,int y, int row){
-        super(x,y,100,100);
+        super(x,y,100,300);
         this.row=row;
         peas = new ArrayList<>();
         shootTimer=0;

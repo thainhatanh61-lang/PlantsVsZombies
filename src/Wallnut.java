@@ -14,7 +14,7 @@ public class Wallnut extends Plant {
     private int currentState; // 0 = normal, 1 = cracked1, 2 = cracked2
 
     public Wallnut(int x, int y) {
-        super(x, y, 50, 400);
+        super(x, y, 50, 4000);
         loadImage();
         currentState = 0;
     }

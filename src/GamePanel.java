@@ -20,10 +20,10 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
     private int zombieSpawnTimer = 0;
     private int skySunTimer = 0;
     private List<LawnMower> lawnMowers;
-    private ImageIcon potatoCardIcon;
-    private ImageIcon sunflowerCardIcon;
-    private ImageIcon peashooterCardIcon;
-    private ImageIcon wallnutCardIcon;
+    private String gameMode;
+    private String[] plantNames;
+    private int[] plantCosts;
+    private ImageIcon[] plantCardIcons;
     private BufferedImage backgroundImage;
     private BufferedImage chooserBackground;
     private JButton bMenu;
@@ -44,6 +44,11 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
     private static final double GRID_CELL_HEIGHT = GRID_HEIGHT / (double) GRID_ROWS;
 
     public GamePanel(){
+        this("day");
+    }
+
+    public GamePanel(String gameMode){
+        this.gameMode = gameMode;
         plants = new ArrayList<>();
         zombies = new ArrayList<>();
         suns =new ArrayList<>();
@@ -53,16 +58,14 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         setFocusable(true);
         timer= new Timer(30,this);
         timer.start();
-        BufferedImage potatoCardImage = Plant.loadResourceImage("Cards/card_potatomine.png");
-        BufferedImage sunflowerCardImage = Plant.loadResourceImage("Cards/card_sunflower.png");
-        BufferedImage peashooterCardImage = Plant.loadResourceImage("Cards/card_peashooter.png");
-        BufferedImage wallnutCardImage = Plant.loadResourceImage("Cards/card_wallnut.png");
-        backgroundImage = Plant.loadResourceImage("Items/Background/Background_0.jpg");
+        setupPlantRoster();
+        loadCardIcons();
+        if ("night".equals(gameMode)) {
+            backgroundImage = Plant.loadResourceImage("Items/Background/Background_1.jpg");
+        } else {
+            backgroundImage = Plant.loadResourceImage("Items/Background/Background_0.jpg");
+        }
         chooserBackground = Plant.loadResourceImage("Screen/ChooserBackground.png");
-        potatoCardIcon = potatoCardImage != null ? new ImageIcon(potatoCardImage) : new ImageIcon();
-        sunflowerCardIcon = sunflowerCardImage != null ? new ImageIcon(sunflowerCardImage) : new ImageIcon();
-        peashooterCardIcon = peashooterCardImage != null ? new ImageIcon(peashooterCardImage) : new ImageIcon();
-        wallnutCardIcon = wallnutCardImage != null ? new ImageIcon(wallnutCardImage) : new ImageIcon();
         for (int row = 0; row < GRID_ROWS; row++) {
             lawnMowers.add(new LawnMower(LAWN_MOWER_X, getCellCenterY(row)));
         }
@@ -83,6 +86,24 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
           }
         });
         this.add(bMenu);
+    }
+
+    private void setupPlantRoster() {
+        if ("night".equals(gameMode)) {
+            plantNames = new String[]{"Sunshroom", "Puffshroom", "Scaredyshroom", "Wallnut", "CherryBomb", "Iceshroom", "PotatoMine", "Hypnoshroom"};
+            plantCosts = new int[]{25, 0, 25, 50, 150, 75, 25, 75};
+        } else {
+            plantNames = new String[]{"Sunflower", "Peashooter", "Wallnut", "PotatoMine", "Jalapeno", "Chomper", "CherryBomb", "Spikeweed"};
+            plantCosts = new int[]{50, 100, 50, 25, 125, 150, 150, 100};
+        }
+    }
+
+    private void loadCardIcons() {
+        plantCardIcons = new ImageIcon[plantNames.length];
+        for (int i = 0; i < plantNames.length; i++) {
+            BufferedImage cardImage = Plant.loadResourceImage("UI/SeedChooser/Cards/" + plantNames[i] + "_card.png");
+            plantCardIcons[i] = cardImage != null ? new ImageIcon(cardImage) : new ImageIcon();
+        }
     }
     @Override
     public void actionPerformed(ActionEvent e){
@@ -174,12 +195,14 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
             g.fillRect(0, 0, getWidth(), getHeight());
         }
 
+        drawGridEffects(g);
+
         // Draw chooser background bar at top
         if (chooserBackground != null) {
-            g.drawImage(chooserBackground, 0, 0, 470, 87, null);
+            g.drawImage(chooserBackground, 0, 0, 620, 87, null);
         } else {
             g.setColor(new Color(139, 90, 43));
-            g.fillRect(0, 0, 470, 87);
+            g.fillRect(0, 0, 620, 87);
         }
 
         // Sun counter (on the chooser bar, left side)
@@ -194,47 +217,23 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         int cardH = 70;
         int cardSpacing = 51;
 
-        // Sunflower card
-        if (sunflowerCardIcon.getImage() != null) {
-            g.drawImage(sunflowerCardIcon.getImage(), cardX, cardY, cardW, cardH, null);
-        }
-        if ("Sunflower".equals(selectedPlant)) {
-            g.setColor(new Color(255, 255, 0, 100));
-            g.fillRect(cardX, cardY, cardW, cardH);
-        }
-
-        // Peashooter card
-        cardX += cardSpacing;
-        if (peashooterCardIcon.getImage() != null) {
-            g.drawImage(peashooterCardIcon.getImage(), cardX, cardY, cardW, cardH, null);
-        }
-        if ("Peashooter".equals(selectedPlant)) {
-            g.setColor(new Color(255, 255, 0, 100));
-            g.fillRect(cardX, cardY, cardW, cardH);
-        }
-
-        // Wall-nut card
-        cardX += cardSpacing;
-        if (wallnutCardIcon.getImage() != null) {
-            g.drawImage(wallnutCardIcon.getImage(), cardX, cardY, cardW, cardH, null);
-        }
-        if ("Wallnut".equals(selectedPlant)) {
-            g.setColor(new Color(255, 255, 0, 100));
-            g.fillRect(cardX, cardY, cardW, cardH);
-        }
-
-        // PotatoMine card
-        cardX += cardSpacing;
-        if (potatoCardIcon.getImage() != null) {
-            g.drawImage(potatoCardIcon.getImage(), cardX, cardY, cardW, cardH, null);
-        }
-        if ("PotatoMine".equals(selectedPlant)) {
-            g.setColor(new Color(255, 255, 0, 100));
-            g.fillRect(cardX, cardY, cardW, cardH);
+        for (int i = 0; i < plantNames.length; i++) {
+            if (plantCardIcons[i].getImage() != null) {
+                g.drawImage(plantCardIcons[i].getImage(), cardX, cardY, cardW, cardH, null);
+            }
+            if (sunPoints < plantCosts[i]) {
+                g.setColor(new Color(80, 80, 80, 120));
+                g.fillRect(cardX, cardY, cardW, cardH);
+            }
+            if (plantNames[i].equals(selectedPlant)) {
+                g.setColor(new Color(255, 255, 0, 100));
+                g.fillRect(cardX, cardY, cardW, cardH);
+            }
+            cardX += cardSpacing;
         }
 
         // Shovel icon area
-        cardX += cardSpacing;
+        cardX += 10;
         g.setColor(new Color(139, 90, 43));
         g.fillRect(cardX, cardY, cardW, cardH);
         g.setColor(Color.LIGHT_GRAY);
@@ -280,6 +279,32 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         return GRID_Y + (int) Math.round(row * GRID_CELL_HEIGHT + GRID_CELL_HEIGHT / 2.0);
     }
 
+    private void drawGridEffects(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+        if ("night".equals(gameMode)) {
+            g2d.setColor(new Color(0, 0, 0, 80));
+            for (int row = 0; row < GRID_ROWS; row++) {
+                for (int col = 0; col < GRID_COLUMNS; col++) {
+                    int x = GRID_X + (int)Math.round(col * GRID_CELL_WIDTH);
+                    int y = GRID_Y + (int)Math.round(row * GRID_CELL_HEIGHT);
+                    int w = (int)Math.round(GRID_CELL_WIDTH);
+                    int h = (int)Math.round(GRID_CELL_HEIGHT);
+                    g2d.fillRect(x, y, w, h);
+                }
+            }
+        }
+
+        g2d.setColor(new Color(255, 255, 255, 45));
+        for (int col = 0; col <= GRID_COLUMNS; col++) {
+            int x = GRID_X + (int)Math.round(col * GRID_CELL_WIDTH);
+            g2d.drawLine(x, GRID_Y, x, GRID_Y + GRID_HEIGHT);
+        }
+        for (int row = 0; row <= GRID_ROWS; row++) {
+            int y = GRID_Y + (int)Math.round(row * GRID_CELL_HEIGHT);
+            g2d.drawLine(GRID_X, y, GRID_X + GRID_WIDTH, y);
+        }
+    }
+
     private int countSkySuns() {
         int count = 0;
         for (Sun sun : suns) {
@@ -288,6 +313,47 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
             }
         }
         return count;
+    }
+
+    private int getPlantCost(String name) {
+        for (int i = 0; i < plantNames.length; i++) {
+            if (plantNames[i].equals(name)) {
+                return plantCosts[i];
+            }
+        }
+        return 9999;
+    }
+
+    private Plant createPlant(String name, int x, int y, int row) {
+        switch(name){
+            case "Sunflower":
+                return new Sunflower(x, y);
+            case "Peashooter":
+                return new Peashooter(x, y, row);
+            case "Wallnut":
+                return new Wallnut(x, y);
+            case "PotatoMine":
+                return new PotatoMine(x, y);
+            case "Jalapeno":
+                return new BasicPlant(x, y, 125, 300, "Plants/Jalapeno/Jalapeno/Jalapeno_", 8);
+            case "Chomper":
+                return new BasicPlant(x, y, 150, 300, "Plants/Chomper/Chomper/Chomper_", 13);
+            case "CherryBomb":
+                return new BasicPlant(x, y, 150, 300, "Plants/CherryBomb/CherryBomb_", 7);
+            case "Spikeweed":
+                return new BasicPlant(x, y, 100, 300, "Plants/Spikeweed/Spikeweed/Spikeweed_", 19);
+            case "Sunshroom":
+                return new BasicPlant(x, y, 25, 300, "Plants/SunShroom/SunShroom/SunShroom_", 10);
+            case "Puffshroom":
+                return new BasicPlant(x, y, 0, 200, "Plants/PuffShroom/PuffShroom/PuffShroom_", 14);
+            case "Scaredyshroom":
+                return new BasicPlant(x, y, 25, 300, "Plants/ScaredyShroom/ScaredyShroom/ScaredyShroom_", 17);
+            case "Iceshroom":
+                return new BasicPlant(x, y, 75, 300, "Plants/IceShroom/IceShroom/IceShroom_", 11);
+            case "Hypnoshroom":
+                return new BasicPlant(x, y, 75, 300, "Plants/HypnoShroom/HypnoShroom/HypnoShroom_", 15);
+        }
+        return null;
     }
 
     @Override
@@ -306,14 +372,16 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
             int cardX = 77;
             int cardW = 50;
             int cardSpacing = 51;
-            if (mx>=cardX && mx<cardX+cardW) { selectedPlant="Sunflower"; return; }
-            cardX += cardSpacing;
-            if (mx>=cardX && mx<cardX+cardW) { selectedPlant="Peashooter"; return; }
-            cardX += cardSpacing;
-            if (mx>=cardX && mx<cardX+cardW) { selectedPlant="Wallnut"; return; }
-            cardX += cardSpacing;
-            if (mx>=cardX && mx<cardX+cardW) { selectedPlant="PotatoMine"; return; }
-            cardX += cardSpacing;
+            for (int i = 0; i < plantNames.length; i++) {
+                if (mx>=cardX && mx<cardX+cardW) {
+                    if (sunPoints >= plantCosts[i]) {
+                        selectedPlant = plantNames[i];
+                    }
+                    return;
+                }
+                cardX += cardSpacing;
+            }
+            cardX += 10;
             if (mx>=cardX && mx<cardX+cardW) { selectedPlant="Shovel"; return; }
         }
         if (selectedPlant!=null&&isInsideGrid(mx, my)){
@@ -334,34 +402,11 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
                     }
                 } else if (grid[row][col] == 0) {
                     Plant plant=null;
-                    int cost=0;
+                    int cost=getPlantCost(selectedPlant);
                     int centerX = getCellCenterX(col);
                     int centerY = getCellCenterY(row);
-                    switch(selectedPlant){
-                        case "Sunflower":
-                            cost=50;
-                            if (sunPoints>=cost){
-                                plant=new Sunflower(centerX, centerY);
-                            }
-                            break;
-                        case "Peashooter":
-                            cost=100;
-                            if (sunPoints>=cost){
-                                plant=new Peashooter(centerX, centerY, row);
-                            }
-                            break;
-                        case "Wallnut":
-                            cost = 50;
-                            if (sunPoints >= cost) {
-                                plant = new Wallnut(centerX, centerY);
-                            }
-                            break;
-                        case "PotatoMine":
-                            cost = 25;
-                            if (sunPoints >= cost) {
-                                plant = new PotatoMine(centerX, centerY);
-                            }
-                            break;
+                    if (sunPoints>=cost){
+                        plant = createPlant(selectedPlant, centerX, centerY, row);
                     }
                     if (plant!=null){
                         plants.add(plant);

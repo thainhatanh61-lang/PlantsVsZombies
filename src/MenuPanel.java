@@ -17,9 +17,12 @@ public class MenuPanel extends JPanel{
         title.setForeground(Color.WHITE);
         title.setBounds(0,100,900,80);
         add(title);
-        JButton bPlay= createButton("PLAY", 350,250,200,60);
-        bPlay.addActionListener(e-> startGame());
-        add(bPlay);
+        JButton bDay= createButton("DAY", 350,250,200,60);
+        bDay.addActionListener(e-> startGame("day"));
+        add(bDay);
+        JButton bNight= createButton("NIGHT", 350,330,200,60);
+        bNight.addActionListener(e-> startGame("night"));
+        add(bNight);
         JButton bExit= createButton("EXIT", 350,410,200,60);
         bExit.addActionListener(e-> System.exit(0));
         add(bExit);
@@ -42,8 +45,8 @@ public class MenuPanel extends JPanel{
         });
         return button;
     }
-    private void startGame(){
-        gamePanel= new GamePanel();
+    private void startGame(String mode){
+        gamePanel= new GamePanel(mode);
         frame.getContentPane().removeAll();
         frame.add(gamePanel);
         frame.revalidate();
