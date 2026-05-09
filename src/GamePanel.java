@@ -17,7 +17,8 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
     private String selectedPlant = null;
     private int[][] grid = new int[5][8];
     private int zombieSpawnTimer = 0;
-    private int skySunTimer = 0;
+    private int skySunTimer = 200;
+    private int gameTimer = 0;
     private List<LawnMower> lawnMowers;
     private String gameMode;
     private String[] plantNames;
@@ -149,13 +150,16 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
                 plantCooldowns[i]--;
             }
         }
+        gameTimer++;
         skySunTimer++;
-        if (skySunTimer >= 500 && countSkySuns() < 3){
+        if (skySunTimer >= 250 && countSkySuns() < 6){
             skySunTimer = 0;
-            int sx= random.nextInt(800)+80;
-            int sy= 0;
-            int targetY= 100+random.nextInt(400);
-            suns.add(new Sun(sx,sy, targetY, true));
+            for (int i = 0; i < 3 && countSkySuns() < 6; i++) {
+                int sx= random.nextInt(700)+80;
+                int sy= -i * 40;
+                int targetY= 120+random.nextInt(360);
+                suns.add(new Sun(sx,sy, targetY, true));
+            }
         }
         for (int i=0;i<suns.size();i++){
             suns.get(i).update();
@@ -187,12 +191,21 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
             lawnMower.update(zombies);
         }
         zombieSpawnTimer++;
-        if (zombieSpawnTimer>=200){
+        int spawnTime = getZombieSpawnTime();
+        if (zombieSpawnTimer>=spawnTime){
             zombieSpawnTimer=0;
             int row=random.nextInt(GRID_ROWS);
             int zombieY = getCellCenterY(row);
             int roll = random.nextInt(10);
-            if (roll == 0) {
+            if (gameTimer < 1500) {
+                zombies.add(new Zombie(920, zombieY));
+            } else if (gameTimer < 3000) {
+                if (roll <= 1) {
+                    zombies.add(new ConeheadZombie(920, zombieY));
+                } else {
+                    zombies.add(new Zombie(920, zombieY));
+                }
+            } else if (roll == 0) {
                 zombies.add(new BucketheadZombie(920, zombieY));
             } else if (roll <= 2) {
                 zombies.add(new ConeheadZombie(920, zombieY));
@@ -351,6 +364,19 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
             }
         }
         return count;
+    }
+
+    private int getZombieSpawnTime() {
+        if (gameTimer < 1500) {
+            return 360;
+        }
+        if (gameTimer < 3000) {
+            return 250;
+        }
+        if (gameTimer < 5000) {
+            return 180;
+        }
+        return 130;
     }
 
     private void drawHoverCell(Graphics g) {
