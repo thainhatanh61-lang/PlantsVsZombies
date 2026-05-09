@@ -6,7 +6,7 @@ public class BucketheadZombie extends Zombie {
     private BufferedImage[] bucketAttackFrames;
 
     public BucketheadZombie(int x, int y) {
-        super(x, y, 1300, 1);
+        super(x, y, ZombieStats.BUCKETHEAD, 1);
     }
 
     @Override
@@ -19,7 +19,7 @@ public class BucketheadZombie extends Zombie {
 
     @Override
     protected BufferedImage[] getCurrentFrames() {
-        if (health > 200) {
+        if (health > ZombieStats.NORMAL) {
             if (dying && dieFrames != null && dieFrames.length > 0) {
                 return dieFrames;
             }

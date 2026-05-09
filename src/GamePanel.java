@@ -411,7 +411,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
             case "PotatoMine":
                 return new PotatoMine(x, y);
             case "Jalapeno":
-                return new BasicPlant(x, y, 125, 300, "Plants/Jalapeno/Jalapeno/Jalapeno_", 8);
+                return new JalapenoPlant(x, y);
             case "Chomper":
                 return new BasicPlant(x, y, 150, 300, "Plants/Chomper/Chomper/Chomper_", 13);
             case "CherryBomb":
@@ -421,11 +421,11 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
             case "Sunshroom":
                 return new BasicPlant(x, y, 25, 300, "Plants/SunShroom/SunShroom/SunShroom_", 10);
             case "Puffshroom":
-                return new BasicPlant(x, y, 0, 200, "Plants/PuffShroom/PuffShroom/PuffShroom_", 14);
+                return new MushroomShooterPlant(x, y, false);
             case "Scaredyshroom":
-                return new BasicPlant(x, y, 25, 300, "Plants/ScaredyShroom/ScaredyShroom/ScaredyShroom_", 17);
+                return new MushroomShooterPlant(x, y, true);
             case "Iceshroom":
-                return new BasicPlant(x, y, 75, 300, "Plants/IceShroom/IceShroom/IceShroom_", 11);
+                return new IceShroomPlant(x, y);
             case "Hypnoshroom":
                 return new BasicPlant(x, y, 75, 300, "Plants/HypnoShroom/HypnoShroom/HypnoShroom_", 15);
         }
