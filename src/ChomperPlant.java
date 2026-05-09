@@ -13,7 +13,7 @@ public class ChomperPlant extends Plant {
     private int digestTimer;
     private boolean attacking;
     private boolean digesting;
-    private static final int DIGEST_TIME = 700;
+    private static final int DIGEST_TIME = 1400;
 
     public ChomperPlant(int x, int y) {
         super(x, y, 150, 300);

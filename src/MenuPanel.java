@@ -16,7 +16,7 @@ public class MenuPanel extends JPanel{
     public MenuPanel(JFrame frame){
         this.frame= frame;
         setLayout(null);
-        backgroundImage = Plant.loadResourceImage("Screen/MainMenu.png");
+        backgroundImage = new ImageIcon("resources/graphics/Screen/MainMenu.png").getImage();
         adventureImage = Plant.loadResourceImage("Screen/Adventure_0.png");
         adventureHoverImage = Plant.loadResourceImage("Screen/Adventure_1.png");
         // Brighten adventure_1 to match adventure_0 if it's too gray

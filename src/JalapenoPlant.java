@@ -12,9 +12,9 @@ public class JalapenoPlant extends Plant {
     private int fuseTimer;
     private int fireTimer;
     private boolean activated;
-    private static final int FUSE_TIME = 33;
-    private static final int FIRE_TIME = 33;
-    private static final int FIRE_DAMAGE_PER_TICK = 1000;
+    private static final int FUSE_TIME = 100;
+    private static final int FIRE_TIME = 167;
+    private static final int FIRE_DAMAGE_PER_TICK = 54;
 
     public JalapenoPlant(int x, int y) {
         super(x, y, 125, 300);
