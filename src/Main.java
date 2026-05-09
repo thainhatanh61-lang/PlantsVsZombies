@@ -7,8 +7,17 @@ public class Main{
         frame.setSize(900,600);
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
-        GamePanel gamePanel = new GamePanel();
-        frame.add(gamePanel);
+
+        MainMenuPanel menuPanel = new MainMenuPanel(new Runnable() {
+            @Override
+            public void run() {
+                GamePanel gamePanel = new GamePanel();
+                frame.setContentPane(gamePanel);
+                frame.revalidate();
+                gamePanel.requestFocusInWindow();
+            }
+        });
+        frame.add(menuPanel);
         frame.setVisible(true);
     }
 }
