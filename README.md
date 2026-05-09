@@ -1,12 +1,17 @@
-Plants vs Zombies - Java Edition
+# Plants vs Zombies - Java Edition
+
+## Details
+
+**Created by:
+[Nguyen Tri Nhan] (https://github.com/Teru127), [Nguyen Le Hoang Long] (https://github.com/longnguyen9030) and [Thai Nhat Anh] (https://github.com/thainhatanh61-lang)
+
+This is a clone of the strategy video game, [Plants vs. Zombies](https://en.wikipedia.org/wiki/Plants_vs._Zombies), originally developed by PopCap Games.
+
+Made as a part of final project in Object-oriented Programming course at International University - VNUHCM.
 
 A classic "Plants vs Zombies" tower defense game developed in "Java Swing".
 
-Project Repository
-
-GitHub: [https://github.com/thainhatanh61-lang/PlantsVsZombies](https://github.com/thainhatanh61-lang/PlantsVsZombies)
-
-Features
+## Features
 
 - Beautiful "Main Menu" with Play and Exit buttons
 - "In-game MENU button" (top right) to return to main menu anytime
@@ -26,38 +31,28 @@ Features
 - Shovel tool to remove plants
 - Game Over with option to return to menu
 
-How to Play
+## How to Play
+### Executing the JAR File
 
 Controls
-- Mouse Left Click:
-  - Click on plant cards to select
-  - Click on lawn to plant
-  - Click on suns to collect
-  - Use "Shovel" to dig up plants
-- "MENU Button" (Top Right Corner): Return to Main Menu
 
-Zombies (4 Types)
-| Zombie Type         | Health | Speed | Special Feature                  |
-|---------------------|--------|-------|----------------------------------|
-| Normal Zombie       | 100    | 1     | Basic zombie                     |
-| Conehead Zombie     | 370    | 1     | Protective cone helmet           |
-| Buckethead Zombie   | 650    | 1     | Very high durability bucket      |
-| Flag Zombie         | 100    | 2     | Faster movement                  |
+To play the game, the following steps can be followed:
+1. Clone this repository using the command: `git clone https://github.com/thainhatanh61-lang/PlantsVsZombies.git` 
+2. cd into the directory `PlantVsZombies` using: `cd PlantsVsZombies`
+3. Download the **JDK 8** or higher for your platform from [Oracle's website](https://www.oracle.com/java/technologies/downloads/). Install it and verify with:
+```bash
+   java -version
+```
+4. Make the script executable and run it:
+```bash
+   chmod +x PlantsVsZombies.sh
+   ./PlantsVsZombies.sh
+```
+   Alternatively, run directly with Java:
+```bash
+   java --module-path javafx-sdk-26.0.1/lib --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.media -jar PlantVsZombies.jar
+```
+   > **Note:** `--module-path` specifies the path to your JavaFX SDK `lib` folder. The variable `LIB_PATH` in `PlantsVsZombies.sh` can be updated if your SDK is stored in a different location.
 
-Plant Costs
-| Plant          | Cost | Role                          |
-|----------------|------|-------------------------------|
-| Peashooter     | 100  | Offensive - Shoots peas       |
-| Sunflower      | 50   | Economy - Generates sun       |
-| Wall-nut       | 50   | Defense - High HP wall        |
-| Potato Mine    | 25   | Trap - Explodes on contact    |
 
-How to Run
-Requirements
-- "JDK 8" or higher
-- IntelliJ IDEA / Eclipse / VS Code
 
-Steps
-Clone the repository:
-   ```bash
-   git clone https://github.com/thainhatanh61-lang/PlantsVsZombies.git
