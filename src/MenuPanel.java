@@ -3,50 +3,64 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class MenuPanel extends JPanel{
-    private GamePanel gamePanel;
     private JFrame frame;
+    private Image backgroundImage;
+    private Image adventureImage;
+    private Image adventureHoverImage;
+    private Rectangle adventureButton;
+    private Rectangle adventureNightButton;
+    private boolean hoverAdventure;
+    private boolean hoverNight;
+
     public MenuPanel(JFrame frame){
         this.frame= frame;
         setLayout(null);
-        setBackground(new Color(0,0,0));
-        JLabel background= new JLabel();
-        background.setBounds(0,0,900,600);
-        add(background);
-        JLabel title= new JLabel("PLANTS VS ZOMBIES", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD,48));
-        title.setForeground(Color.WHITE);
-        title.setBounds(0,100,900,80);
-        add(title);
-        JButton bDay= createButton("DAY", 350,250,200,60);
-        bDay.addActionListener(e-> startGame("day"));
-        add(bDay);
-        JButton bNight= createButton("NIGHT", 350,330,200,60);
-        bNight.addActionListener(e-> startGame("night"));
-        add(bNight);
-        JButton bExit= createButton("EXIT", 350,410,200,60);
-        bExit.addActionListener(e-> System.exit(0));
-        add(bExit);
-    }
-    public JButton createButton(String text, int x,int y,int w,int h){
-        JButton button= new JButton(text);
-        button.setBounds(x,y,w,h);
-        button.setFont(new Font("Arial", Font.BOLD,24));
-        button.setFocusPainted(false);
-        button.setBackground(new Color(34,139,34));
-        button.setForeground(Color.WHITE);
-        button.setBorder(BorderFactory.createRaisedBevelBorder());
-        button.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e){
-                button.setBackground(new Color(50,205,50));
+        backgroundImage = new ImageIcon("resources/graphics/Screen/MainMenu.png").getImage();
+        adventureImage = new ImageIcon("resources/graphics/Screen/Adventure_0.png").getImage();
+        adventureHoverImage = new ImageIcon("resources/graphics/Screen/Adventure_1.png").getImage();
+        adventureButton = new Rectangle(520, 100, 230, 85);
+        adventureNightButton = new Rectangle(520, 190, 230, 85);
+
+        addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (adventureButton.contains(e.getPoint())) {
+                    startGame("day");
+                } else if (adventureNightButton.contains(e.getPoint())) {
+                    startGame("night");
+                }
             }
-            public void mouseExited(MouseEvent e){
-                button.setBackground(new Color(34,139,34));
-            }            
         });
-        return button;
+        addMouseMotionListener(new MouseMotionAdapter() {
+            public void mouseMoved(MouseEvent e) {
+                hoverAdventure = adventureButton.contains(e.getPoint());
+                hoverNight = adventureNightButton.contains(e.getPoint());
+                repaint();
+            }
+        });
     }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
+        } else {
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, getWidth(), getHeight());
+        }
+
+        Image firstButton = hoverAdventure ? adventureHoverImage : adventureImage;
+        Image secondButton = hoverNight ? adventureHoverImage : adventureImage;
+        if (firstButton != null) {
+            g.drawImage(firstButton, adventureButton.x, adventureButton.y, adventureButton.width, adventureButton.height, null);
+        }
+        if (secondButton != null) {
+            g.drawImage(secondButton, adventureNightButton.x, adventureNightButton.y, adventureNightButton.width, adventureNightButton.height, null);
+        }
+    }
+
     private void startGame(String mode){
-        gamePanel= new GamePanel(mode);
+        GamePanel gamePanel= new GamePanel(mode);
         frame.getContentPane().removeAll();
         frame.add(gamePanel);
         frame.revalidate();
