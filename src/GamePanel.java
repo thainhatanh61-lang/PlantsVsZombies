@@ -57,6 +57,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 
     public GamePanel(String gameMode){
         this.gameMode = gameMode;
+        setLayout(null);
         plants = new ArrayList<>();
         zombies = new ArrayList<>();
         suns =new ArrayList<>();
@@ -80,7 +81,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
             lawnMowers.add(new LawnMower(LAWN_MOWER_X, getCellCenterY(row)));
         }
         bMenu =new JButton("MENU");
-        bMenu.setBounds(780,10,100,35);
+        bMenu.setBounds(820, 5, 80, 35);
         bMenu.setFont(new Font("Arial", Font.BOLD,14));
         bMenu.setBackground(new Color(139,69,19));
         bMenu.setForeground(Color.WHITE);
@@ -149,7 +150,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
             }
         }
         skySunTimer++;
-        if (skySunTimer >= 500 && countSkySuns() < 3){
+        if (skySunTimer >= 200 && countSkySuns() < 4){
             skySunTimer = 0;
             int sx= random.nextInt(800)+80;
             int sy= 0;
@@ -176,7 +177,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
             }
         }
         for (int i=0;i <zombies.size();i++) {
-            zombies.get(i).update(plants);
+            zombies.get(i).update(plants, zombies);
             if (zombies.get(i).isDead()) {
                 zombies.remove(i);
                 i--;
@@ -215,6 +216,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
                 int choice= JOptionPane.showConfirmDialog(this,"Game Over! Zombies ate your brain!\n\nDo you want to go back to the Menu?", "Game Over", JOptionPane.YES_NO_CANCEL_OPTION);
                 if (choice== JOptionPane.YES_OPTION){
                     returnToMenu();
+                    return;
                 }
                 else{
                     System.exit(0);
@@ -336,18 +338,10 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
     private void drawGridEffects(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         if ("night".equals(gameMode)) {
-            g2d.setColor(new Color(0, 0, 0, 80));
-            for (int row = 0; row < GRID_ROWS; row++) {
-                for (int col = 0; col < GRID_COLUMNS; col++) {
-                    int x = GRID_X + (int)Math.round(col * GRID_CELL_WIDTH);
-                    int y = GRID_Y + (int)Math.round(row * GRID_CELL_HEIGHT);
-                    int w = (int)Math.round(GRID_CELL_WIDTH);
-                    int h = (int)Math.round(GRID_CELL_HEIGHT);
-                    g2d.fillRect(x, y, w, h);
-                }
-            }
+            // Overlay removed to only show the yard background
         }
 
+/*
         g2d.setColor(new Color(255, 255, 255, 45));
         for (int col = 0; col <= GRID_COLUMNS; col++) {
             int x = GRID_X + (int)Math.round(col * GRID_CELL_WIDTH);
@@ -357,6 +351,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
             int y = GRID_Y + (int)Math.round(row * GRID_CELL_HEIGHT);
             g2d.drawLine(GRID_X, y, GRID_X + GRID_WIDTH, y);
         }
+*/
     }
 
     private int countSkySuns() {

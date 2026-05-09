@@ -76,7 +76,7 @@ public class Zombie {
         return frameList.toArray(new BufferedImage[0]);
     }
 
-    public void update(List<Plant> plants) {
+    public void update(List<Plant> plants, List<Zombie> allZombies) {
         if (burning) {
             burnTimer++;
             if (burnTimer >= 35) {
@@ -105,24 +105,21 @@ public class Zombie {
             }
             return;
         }
-
-        if (friendly) {
-            eating = false;
-            if (chilledTimer > 0) {
-                chilledTimer--;
-                chillMoveTimer++;
-                if (chillMoveTimer >= 2) {
-                    chillMoveTimer = 0;
-                    x += speed;
-                }
-            } else {
-                x += speed;
-            }
-            animateCurrentFrames();
-            return;
-        }
-
         eating = false;
+        
+        // Check for enemy zombies to eat
+        for (Zombie other : allZombies) {
+            if (other != this && !other.isDead() && other.isFriendly() != this.friendly &&
+                Math.abs(y - other.getY()) <= 20 && Math.abs(x - other.getX()) <= 40) {
+                attackTimer++;
+                if (attackTimer >= 40) {
+                    other.takeDamage(15);
+                    attackTimer = 0;
+                }
+                eating = true;
+                break;
+            }
+        }
         for (Plant plant : plants) {
             if (!plant.isDead() &&
                 plant.canBeEaten() &&
@@ -138,15 +135,16 @@ public class Zombie {
             }
         }
         if (!eating) {
+            int moveDir = friendly ? 1 : -1;
             if (chilledTimer > 0) {
                 chilledTimer--;
                 chillMoveTimer++;
                 if (chillMoveTimer >= 2) {
                     chillMoveTimer = 0;
-                    x -= speed;
+                    x += speed * moveDir;
                 }
             } else {
-                x -= speed;
+                x += speed * moveDir;
             }
         }
 
@@ -217,20 +215,38 @@ public class Zombie {
         BufferedImage[] currentFrames = getCurrentFrames();
         if (currentFrames != null && currentFrames.length > 0) {
             int idx = frameIndex % currentFrames.length;
-            if (currentFrames[idx] != null) {
-                g2d.drawImage(currentFrames[idx],
-                    x - drawWidth / 2, y - drawHeight + 30,
-                    drawWidth, drawHeight, null);
+            BufferedImage frame = currentFrames[idx];
+            if (frame != null) {
+                int dx = x - drawWidth / 2;
+                int dy = y - drawHeight + 30;
+                
+                if (frozenTimer > 0 || friendly) {
+                    // Create a temporary image to apply tint only to zombie pixels
+                    BufferedImage temp = new BufferedImage(frame.getWidth(), frame.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D gTemp = temp.createGraphics();
+                    gTemp.drawImage(frame, 0, 0, null);
+                    gTemp.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.5f));
+                    if (frozenTimer > 0) {
+                        gTemp.setColor(new Color(0, 150, 255));
+                    } else {
+                        gTemp.setColor(new Color(160, 0, 255));
+                    }
+                    gTemp.fillRect(0, 0, frame.getWidth(), frame.getHeight());
+                    gTemp.dispose();
+                    
+                    if (friendly) {
+                        g2d.drawImage(temp, dx + drawWidth, dy, -drawWidth, drawHeight, null);
+                    } else {
+                        g2d.drawImage(temp, dx, dy, drawWidth, drawHeight, null);
+                    }
+                } else {
+                    if (friendly) {
+                        g2d.drawImage(frame, dx + drawWidth, dy, -drawWidth, drawHeight, null);
+                    } else {
+                        g2d.drawImage(frame, dx, dy, drawWidth, drawHeight, null);
+                    }
+                }
             }
-        }
-
-        if (frozenTimer > 0) {
-            g.setColor(new Color(0, 100, 255, 100));
-            g.fillRect(x - drawWidth / 2, y - drawHeight + 30, drawWidth, drawHeight);
-        }
-        if (friendly) {
-            g.setColor(new Color(180, 60, 255, 80));
-            g.fillRect(x - drawWidth / 2, y - drawHeight + 30, drawWidth, drawHeight);
         }
 
         // Health bar

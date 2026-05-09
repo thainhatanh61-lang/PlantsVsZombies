@@ -4,10 +4,10 @@ public class NewspaperZombie extends Zombie {
     }
 
     @Override
-    public void update(java.util.List<Plant> plants) {
+    public void update(java.util.List<Plant> plants, java.util.List<Zombie> allZombies) {
         if (health <= ZombieStats.NEWSPAPER_BODY && health > 0) {
             speed = 2;
         }
-        super.update(plants);
+        super.update(plants, allZombies);
     }
 }

@@ -32,27 +32,16 @@ A classic "Plants vs Zombies" tower defense game developed in "Java Swing".
 - Game Over with option to return to menu
 
 ## How to Play
-### Executing the JAR File
-
-Controls
-
-To play the game, the following steps can be followed:
-1. Clone this repository using the command: `git clone https://github.com/thainhatanh61-lang/PlantsVsZombies.git` 
-2. cd into the directory `PlantVsZombies` using: `cd PlantsVsZombies`
-3. Download the **JDK 8** or higher for your platform from [Oracle's website](https://www.oracle.com/java/technologies/downloads/). Install it and verify with:
+4. Run the game using the provided script:
 ```bash
-   java -version
-```
-4. Make the script executable and run it:
-```bash
-   chmod +x PlantsVsZombies.sh
-   ./PlantsVsZombies.sh
+   ./run.sh
 ```
    Alternatively, run directly with Java:
 ```bash
-   java --module-path javafx-sdk-26.0.1/lib --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.media -jar PlantVsZombies.jar
+   javac -d out src/*.java
+   java -cp out Main
 ```
-   > **Note:** `--module-path` specifies the path to your JavaFX SDK `lib` folder. The variable `LIB_PATH` in `PlantsVsZombies.sh` can be updated if your SDK is stored in a different location.
+   > **Note:** Ensure you are in the project root directory so that the `resources/` folder is accessible.
 
 
 

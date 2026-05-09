@@ -9,7 +9,7 @@ public class HypnoShroomPlant extends Plant {
     private int frameTimer;
 
     public HypnoShroomPlant(int x, int y) {
-        super(x, y, 75, 300);
+        super(x, y, 75, 1);
         frames = new ArrayList<>();
         for (int i = 0; i < 15; i++) {
             BufferedImage img = loadResourceImage("Plants/HypnoShroom/HypnoShroom/HypnoShroom_" + i + ".png");

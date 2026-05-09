@@ -21,6 +21,11 @@ public class SpikeweedPlant extends Plant {
     }
 
     @Override
+    public boolean canBeEaten() {
+        return false;
+    }
+
+    @Override
     public void update(List<Zombie> zombies, List<Sun> suns) {
         damageTimer++;
         if (damageTimer >= 30) {

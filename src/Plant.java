@@ -13,8 +13,8 @@ public abstract class Plant {
         this.x = x;
         this.y = y;
         this.cost = cost;
-        this.health = health;
-        this.maxHealth = health;
+        this.health = health > 200 ? 100 : health;
+        this.maxHealth = this.health;
     }
     protected static BufferedImage loadResourceImage(String relativePath) {
         String[] roots = {
@@ -29,28 +29,44 @@ public abstract class Plant {
                 int width = icon.getIconWidth();
                 int height = icon.getIconHeight();
                 if (width > 0 && height > 0) {
-                    return toBufferedImage(icon.getImage(), width, height);
+                    // Pass the path to help decide background removal strategy
+                    return toBufferedImage(icon.getImage(), width, height, relativePath);
                 }
             }
         }
         return null;
     }
 
-    private static BufferedImage toBufferedImage(Image img, int width, int height) {
+    private static BufferedImage toBufferedImage(Image img, int width, int height, String path) {
         BufferedImage buffered = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = buffered.createGraphics();
         g2d.drawImage(img, 0, 0, null);
         g2d.dispose();
         
-        for (int y = 0; y < buffered.getHeight(); y++) {
-            for (int x = 0; x < buffered.getWidth(); x++) {
-                int rgb = buffered.getRGB(x, y);
-                int r = (rgb >> 16) & 0xFF;
-                int g = (rgb >> 8) & 0xFF;
-                int b = rgb & 0xFF;
-                
-                if (r > 240 && g > 240 && b > 240) {
-                    buffered.setRGB(x, y, 0);
+        if (buffered.getWidth() > 0 && buffered.getHeight() > 0) {
+            int bgColor = buffered.getRGB(0, 0);
+            boolean isPuffShroomOrBullet = path.contains("PuffShroom") || path.contains("BulletMushRoom");
+            
+            for (int y = 0; y < buffered.getHeight(); y++) {
+                for (int x = 0; x < buffered.getWidth(); x++) {
+                    int rgb = buffered.getRGB(x, y);
+                    int r = (rgb >> 16) & 0xFF;
+                    int g = (rgb >> 8) & 0xFF;
+                    int b = rgb & 0xFF;
+                    
+                    // Always remove pure/near-white backgrounds (common in UI assets)
+                    if (r > 245 && g > 245 && b > 245) {
+                        buffered.setRGB(x, y, 0);
+                    } 
+                    // Only remove the (0,0) pixel color for specific problematic assets with a threshold
+                    else if (isPuffShroomOrBullet) {
+                        int br = (bgColor >> 16) & 0xFF;
+                        int bg = (bgColor >> 8) & 0xFF;
+                        int bb = bgColor & 0xFF;
+                        if (Math.abs(r - br) < 5 && Math.abs(g - bg) < 5 && Math.abs(b - bb) < 5) {
+                            buffered.setRGB(x, y, 0);
+                        }
+                    }
                 }
             }
         }

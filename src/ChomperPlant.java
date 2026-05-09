@@ -13,7 +13,7 @@ public class ChomperPlant extends Plant {
     private int digestTimer;
     private boolean attacking;
     private boolean digesting;
-    private static final int DIGEST_TIME = 1400;
+    private static final int DIGEST_TIME = 700;
 
     public ChomperPlant(int x, int y) {
         super(x, y, 150, 300);
@@ -59,7 +59,7 @@ public class ChomperPlant extends Plant {
         }
 
         for (Zombie zombie : zombies) {
-            if (!zombie.isDead() && Math.abs(zombie.getY() - y) <= 35 && zombie.getX() >= x - 20 && zombie.getX() <= x + 70) {
+            if (!zombie.isDead() && !zombie.isFriendly() && Math.abs(zombie.getY() - y) <= 35 && zombie.getX() >= x && zombie.getX() <= x + 110) {
                 if (zombie.getHealth() <= ZombieStats.NORMAL) {
                     zombie.takeDamage(999999);
                     attacking = true;
