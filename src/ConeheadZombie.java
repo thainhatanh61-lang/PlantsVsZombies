@@ -6,7 +6,7 @@ public class ConeheadZombie extends Zombie {
     private BufferedImage[] coneAttackFrames;
 
     public ConeheadZombie(int x, int y) {
-        super(x, y, 370, 1);
+        super(x, y, 560, 1);
     }
 
     @Override
@@ -20,7 +20,7 @@ public class ConeheadZombie extends Zombie {
     @Override
     protected BufferedImage[] getCurrentFrames() {
         // If cone is still intact (health > normal zombie threshold), use cone frames
-        if (health > 100) {
+        if (health > 200) {
             if (dying && dieFrames != null && dieFrames.length > 0) {
                 return dieFrames;
             }

@@ -10,7 +10,7 @@ public class Sunflower extends Plant{
     private int frameTimer;
 
     public Sunflower(int x, int y){
-        super(x,y,50,100);
+        super(x,y,50,300);
         loadImage();
     }
 
@@ -52,7 +52,7 @@ public class Sunflower extends Plant{
     @Override
     public void update(List<Zombie> zombies, List<Sun> suns){
         timer++;
-        if (timer>=300){
+        if (timer>=800){
             timer=0;
             suns.add(new Sun(x,y,y-40));
         }

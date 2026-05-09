@@ -58,10 +58,22 @@ public class Peashooter extends Plant{
 
     @Override
     public void update(List<Zombie> zombies, List<Sun> suns){
-        shootTimer++;
-        if (shootTimer>=60){
-            shootTimer=0;
-            peas.add(new Pea(x+10,y-5));
+        boolean hasZombieInRow = false;
+        for (Zombie zombie : zombies) {
+            if (!zombie.isDead() && Math.abs(zombie.getY() - y) <= 35 && zombie.getX() > x) {
+                hasZombieInRow = true;
+                break;
+            }
+        }
+
+        if (hasZombieInRow) {
+            shootTimer++;
+            if (shootTimer>=60){
+                shootTimer=0;
+                peas.add(new Pea(x+10,y-5));
+            }
+        } else {
+            shootTimer = 0;
         }
         for (int i=0; i<peas.size();i++){
             Pea pea = peas.get(i);

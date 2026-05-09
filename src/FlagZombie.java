@@ -8,7 +8,7 @@ public class FlagZombie extends Zombie {
     private BufferedImage[] flagLostHeadAttackFrames;
 
     public FlagZombie(int x, int y) {
-        super(x, y, 100, 2); // Same health as normal but faster
+        super(x, y, 200, 2); // Same health as normal but faster
     }
 
     @Override

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Wallnut extends Plant {
+    private static final int DRAW_X_OFFSET = 25;
+    private static final int DRAW_Y_OFFSET = 22;
     private List<BufferedImage> frames;
     private List<BufferedImage> cracked1Frames;
     private List<BufferedImage> cracked2Frames;
@@ -77,19 +79,19 @@ public class Wallnut extends Plant {
         }
         BufferedImage drawImage = !currentFrames.isEmpty() ? currentFrames.get(frameIndex) : null;
         if (drawImage != null) {
-            g2d.drawImage(drawImage, x - 25, y - 30, 50, 50, null);
+            g2d.drawImage(drawImage, x - DRAW_X_OFFSET, y - DRAW_Y_OFFSET, 50, 50, null);
         } else {
             g.setColor(new Color(139, 90, 43));
-            g.fillOval(x - 20, y - 28, 40, 45);
+            g.fillOval(x - 20, y - 20, 40, 45);
             g.setColor(new Color(101, 67, 33));
-            g.drawOval(x - 20, y - 28, 40, 45);
+            g.drawOval(x - 20, y - 20, 40, 45);
             g.setColor(Color.BLACK);
-            g.fillOval(x - 8, y - 15, 5, 5);
-            g.fillOval(x + 3, y - 15, 5, 5);
-            g.drawArc(x - 8, y - 8, 16, 10, 0, -180);
+            g.fillOval(x - 8, y - 7, 5, 5);
+            g.fillOval(x + 3, y - 7, 5, 5);
+            g.drawArc(x - 8, y, 16, 10, 0, -180);
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", Font.BOLD, 10));
-            g.drawString("W", x - 5, y + 5);
+            g.drawString("W", x - 5, y + 13);
         }
         drawHealthBar(g);
     }

@@ -6,35 +6,40 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.List;
+import javax.swing.JButton;
 
 public class GamePanel extends JPanel implements ActionListener, MouseListener{
     private List<Sun> suns;
     private Random random;
     private Timer timer;
-    private int sunPoints=150;
+    private int sunPoints=100;
     private List<Plant> plants;
     private List<Zombie> zombies;
     private String selectedPlant = null;
     private int[][] grid = new int[5][9];
     private int zombieSpawnTimer = 0;
+    private int skySunTimer = 0;
+    private List<LawnMower> lawnMowers;
     private ImageIcon potatoCardIcon;
     private ImageIcon sunflowerCardIcon;
     private ImageIcon peashooterCardIcon;
     private ImageIcon wallnutCardIcon;
     private BufferedImage backgroundImage;
     private BufferedImage chooserBackground;
+    private JButton bMenu;
 
     // Background crop: source rect in the 1400x600 image
     private static final int BG_SRC_X = 230;
     private static final int BG_SRC_END_X = 1130;
 
     // Grid aligned to the yard cells in the cropped background
-    private static final int GRID_X = 23;
+    private static final int GRID_X = 110;
     private static final int GRID_Y = 86;
     private static final int GRID_COLUMNS = 9;
     private static final int GRID_ROWS = 5;
-    private static final int GRID_WIDTH = 843;
-    private static final int GRID_HEIGHT = 489;
+    private static final int GRID_WIDTH = 700;
+    private static final int GRID_HEIGHT = 455;
+    private static final int LAWN_MOWER_X = GRID_X - 55;
     private static final double GRID_CELL_WIDTH = GRID_WIDTH / (double) GRID_COLUMNS;
     private static final double GRID_CELL_HEIGHT = GRID_HEIGHT / (double) GRID_ROWS;
 
@@ -42,6 +47,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         plants = new ArrayList<>();
         zombies = new ArrayList<>();
         suns =new ArrayList<>();
+        lawnMowers = new ArrayList<>();
         random = new Random();
         addMouseListener(this);
         setFocusable(true);
@@ -57,14 +63,36 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         sunflowerCardIcon = sunflowerCardImage != null ? new ImageIcon(sunflowerCardImage) : new ImageIcon();
         peashooterCardIcon = peashooterCardImage != null ? new ImageIcon(peashooterCardImage) : new ImageIcon();
         wallnutCardIcon = wallnutCardImage != null ? new ImageIcon(wallnutCardImage) : new ImageIcon();
+        for (int row = 0; row < GRID_ROWS; row++) {
+            lawnMowers.add(new LawnMower(LAWN_MOWER_X, getCellCenterY(row)));
+        }
+        bMenu =new JButton("MENU");
+        bMenu.setBounds(780,10,100,35);
+        bMenu.setFont(new Font("Arial", Font.BOLD,14));
+        bMenu.setBackground(new Color(139,69,19));
+        bMenu.setForeground(Color.WHITE);
+        bMenu.setFocusPainted(false);
+        bMenu.setBorder(BorderFactory.createRaisedBevelBorder());
+        bMenu.addActionListener(e-> returnToMenu());
+        bMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+          public void mouseEntered(java.awt.event.MouseEvent evt){
+            bMenu.setBackground(new Color(205,133,63));
+          }  
+          public void mouseExited(java.awt.event.MouseEvent evt){
+            bMenu.setBackground(new Color(139,69,19));
+          }
+        });
+        this.add(bMenu);
     }
     @Override
     public void actionPerformed(ActionEvent e){
-        if (random.nextInt(100)<2){
+        skySunTimer++;
+        if (skySunTimer >= 500 && countSkySuns() < 3){
+            skySunTimer = 0;
             int sx= random.nextInt(800)+80;
             int sy= 0;
             int targetY= 100+random.nextInt(400);
-            suns.add(new Sun(sx,sy, targetY));
+            suns.add(new Sun(sx,sy, targetY, true));
         }
         for (int i=0;i<suns.size();i++){
             suns.get(i).update();
@@ -92,6 +120,9 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
                 i--;
             }
         }
+        for (LawnMower lawnMower : lawnMowers) {
+            lawnMower.update(zombies);
+        }
         zombieSpawnTimer++;
         if (zombieSpawnTimer>=200){
             zombieSpawnTimer=0;
@@ -109,10 +140,22 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
             }
         }
         for (Zombie zombie: zombies){
-            if (zombie.getX()<10){
+            boolean protectedByMower = false;
+            for (LawnMower lawnMower : lawnMowers) {
+                if (!lawnMower.isUsed() && Math.abs(lawnMower.getY() - zombie.getY()) <= 35) {
+                    protectedByMower = true;
+                    break;
+                }
+            }
+            if (zombie.getX()<10 && !protectedByMower){
                 timer.stop();
-                JOptionPane.showMessageDialog(this, "Game Over! Zombies ate your brain!");
-                System.exit(0);
+                int choice= JOptionPane.showConfirmDialog(this,"Game Over! Zombies ate your brain!\n\nDo you want to go back to the Menu?", "Game Over", JOptionPane.YES_NO_CANCEL_OPTION);
+                if (choice== JOptionPane.YES_OPTION){
+                    returnToMenu();
+                }
+                else{
+                    System.exit(0);
+                }
             }
         }
         repaint();
@@ -203,6 +246,9 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         }
 
         // Draw plants, zombies, suns
+        for (LawnMower lawnMower : lawnMowers) {
+            lawnMower.draw(g);
+        }
         for (Plant plant: plants){
             plant.draw(g);
         }
@@ -232,6 +278,16 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
 
     private int getCellCenterY(int row) {
         return GRID_Y + (int) Math.round(row * GRID_CELL_HEIGHT + GRID_CELL_HEIGHT / 2.0);
+    }
+
+    private int countSkySuns() {
+        int count = 0;
+        for (Sun sun : suns) {
+            if (sun.isSkySun()) {
+                count++;
+            }
+        }
+        return count;
     }
 
     @Override
@@ -325,5 +381,14 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
     @Override public void mouseEntered(MouseEvent e){
     }
     @Override public void mouseExited(MouseEvent e){
+    }
+    public void returnToMenu(){
+        JFrame frame= (JFrame) SwingUtilities.getWindowAncestor(this);
+        if (frame!=null){
+            frame.getContentPane().removeAll();
+            frame.add(new MenuPanel(frame));
+            frame.revalidate();
+            frame.repaint();
+        }
     }
 }

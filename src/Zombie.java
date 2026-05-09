@@ -30,7 +30,7 @@ public class Zombie {
     protected int dyingTimer;
 
     public Zombie(int x, int y) {
-        this(x, y, 100, 1);
+        this(x, y, 200, 1);
     }
 
     protected Zombie(int x, int y, int health, int speed) {
@@ -98,8 +98,8 @@ public class Zombie {
             x -= speed;
         }
 
-        // Check for lost head state (at 30% of base zombie health = 30 HP)
-        if (!lostHead && health <= 30 && health > 0) {
+        // Lost head starts when zombie is low on health.
+        if (!lostHead && health <= maxHealth * 0.3 && health > 0) {
             lostHead = true;
             frameIndex = 0;
             frameTimer = 0;
