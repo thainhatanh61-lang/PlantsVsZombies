@@ -16,10 +16,10 @@ public class MenuPanel extends JPanel{
         this.frame= frame;
         setLayout(null);
         backgroundImage = new ImageIcon("resources/graphics/Screen/MainMenu.png").getImage();
-        adventureImage = new ImageIcon("resources/graphics/Screen/Adventure_0.png").getImage();
-        adventureHoverImage = new ImageIcon("resources/graphics/Screen/Adventure_1.png").getImage();
-        adventureButton = new Rectangle(520, 100, 230, 85);
-        adventureNightButton = new Rectangle(520, 190, 230, 85);
+        adventureImage = Plant.loadResourceImage("Screen/Adventure_0.png");
+        adventureHoverImage = Plant.loadResourceImage("Screen/Adventure_1.png");
+        adventureButton = new Rectangle(450, 80, 360, 100);
+        adventureNightButton = new Rectangle(440, 200, 360, 100);
 
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -42,20 +42,35 @@ public class MenuPanel extends JPanel{
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
         if (backgroundImage != null) {
-            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
+            g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
         } else {
-            g.setColor(Color.BLACK);
-            g.fillRect(0, 0, getWidth(), getHeight());
+            g2d.setColor(Color.BLACK);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
         }
 
-        Image firstButton = hoverAdventure ? adventureHoverImage : adventureImage;
-        Image secondButton = hoverNight ? adventureHoverImage : adventureImage;
-        if (firstButton != null) {
-            g.drawImage(firstButton, adventureButton.x, adventureButton.y, adventureButton.width, adventureButton.height, null);
-        }
-        if (secondButton != null) {
-            g.drawImage(secondButton, adventureNightButton.x, adventureNightButton.y, adventureNightButton.width, adventureNightButton.height, null);
+        drawMenuButton(g2d, adventureImage, adventureButton, hoverAdventure);
+        drawMenuButton(g2d, adventureHoverImage, adventureNightButton, hoverNight);
+    }
+
+    private void drawMenuButton(Graphics2D g2d, Image img, Rectangle rect, boolean isHovered) {
+        if (img != null) {
+            int x = rect.x;
+            int y = rect.y;
+            int w = rect.width;
+            int h = rect.height;
+            
+            if (isHovered) {
+                // Scale up slightly on hover
+                int offset = 10;
+                x -= offset;
+                y -= offset;
+                w += offset * 2;
+                h += offset * 2;
+            }
+            
+            g2d.drawImage(img, x, y, w, h, null);
         }
     }
 

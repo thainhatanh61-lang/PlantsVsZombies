@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.List;
@@ -16,7 +15,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
     private List<Plant> plants;
     private List<Zombie> zombies;
     private String selectedPlant = null;
-    private int[][] grid = new int[5][9];
+    private int[][] grid = new int[5][8];
     private int zombieSpawnTimer = 0;
     private int skySunTimer = 0;
     private List<LawnMower> lawnMowers;
@@ -43,12 +42,13 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
     // Grid aligned to the yard cells in the cropped background
     private static final int GRID_X = 110;
     private static final int GRID_Y = 86;
-    private static final int GRID_COLUMNS = 9;
+    private static final int GRID_COLUMNS = 8;
     private static final int GRID_ROWS = 5;
-    private static final int GRID_WIDTH = 700;
+    private static final int GRID_WIDTH = 620;
     private static final int GRID_HEIGHT = 455;
     private static final int LAWN_MOWER_X = GRID_X - 55;
-    private static final double GRID_CELL_WIDTH = GRID_WIDTH / (double) GRID_COLUMNS;
+    private static final int GRID_CELL_WIDTH = 68;
+    private static final int GRID_CELL_GAP_X = 12;
     private static final double GRID_CELL_HEIGHT = GRID_HEIGHT / (double) GRID_ROWS;
 
     public GamePanel(){
@@ -57,6 +57,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 
     public GamePanel(String gameMode){
         this.gameMode = gameMode;
+        setLayout(null);
         plants = new ArrayList<>();
         zombies = new ArrayList<>();
         suns =new ArrayList<>();
@@ -80,7 +81,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
             lawnMowers.add(new LawnMower(LAWN_MOWER_X, getCellCenterY(row)));
         }
         bMenu =new JButton("MENU");
-        bMenu.setBounds(780,10,100,35);
+        bMenu.setBounds(820, 5, 80, 35);
         bMenu.setFont(new Font("Arial", Font.BOLD,14));
         bMenu.setBackground(new Color(139,69,19));
         bMenu.setForeground(Color.WHITE);
@@ -176,13 +177,12 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
             }
         }
         for (int i=0;i <zombies.size();i++) {
-            zombies.get(i).update(plants);
+            zombies.get(i).update(plants, zombies);
             if (zombies.get(i).isDead()) {
                 zombies.remove(i);
                 i--;
             }
         }
-        handleFriendlyZombies();
         for (LawnMower lawnMower : lawnMowers) {
             lawnMower.update(zombies);
         }
@@ -215,6 +215,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
                 int choice= JOptionPane.showConfirmDialog(this,"Game Over! Zombies ate your brain!\n\nDo you want to go back to the Menu?", "Game Over", JOptionPane.YES_NO_CANCEL_OPTION);
                 if (choice== JOptionPane.YES_OPTION){
                     returnToMenu();
+                    return;
                 }
                 else{
                     System.exit(0);
@@ -314,11 +315,17 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
     }
 
     private boolean isInsideGrid(int x, int y) {
-        return x >= GRID_X && x < GRID_X + GRID_WIDTH && y >= GRID_Y && y < GRID_Y + GRID_HEIGHT;
+        return getColumnFromX(x) != -1 && y >= GRID_Y && y < GRID_Y + GRID_HEIGHT;
     }
 
     private int getColumnFromX(int x) {
-        return (int) ((x - GRID_X) / GRID_CELL_WIDTH);
+        for (int col = 0; col < GRID_COLUMNS; col++) {
+            int cellX = GRID_X + col * (GRID_CELL_WIDTH + GRID_CELL_GAP_X);
+            if (x >= cellX && x < cellX + GRID_CELL_WIDTH) {
+                return col;
+            }
+        }
+        return -1;
     }
 
     private int getRowFromY(int y) {
@@ -326,7 +333,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
     }
 
     private int getCellCenterX(int col) {
-        return GRID_X + (int) Math.round(col * GRID_CELL_WIDTH + GRID_CELL_WIDTH / 2.0);
+        return GRID_X + col * (GRID_CELL_WIDTH + GRID_CELL_GAP_X) + GRID_CELL_WIDTH / 2;
     }
 
     private int getCellCenterY(int row) {
@@ -334,29 +341,6 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
     }
 
     private void drawGridEffects(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
-        if ("night".equals(gameMode)) {
-            g2d.setColor(new Color(0, 0, 0, 80));
-            for (int row = 0; row < GRID_ROWS; row++) {
-                for (int col = 0; col < GRID_COLUMNS; col++) {
-                    int x = GRID_X + (int)Math.round(col * GRID_CELL_WIDTH);
-                    int y = GRID_Y + (int)Math.round(row * GRID_CELL_HEIGHT);
-                    int w = (int)Math.round(GRID_CELL_WIDTH);
-                    int h = (int)Math.round(GRID_CELL_HEIGHT);
-                    g2d.fillRect(x, y, w, h);
-                }
-            }
-        }
-
-        g2d.setColor(new Color(255, 255, 255, 45));
-        for (int col = 0; col <= GRID_COLUMNS; col++) {
-            int x = GRID_X + (int)Math.round(col * GRID_CELL_WIDTH);
-            g2d.drawLine(x, GRID_Y, x, GRID_Y + GRID_HEIGHT);
-        }
-        for (int row = 0; row <= GRID_ROWS; row++) {
-            int y = GRID_Y + (int)Math.round(row * GRID_CELL_HEIGHT);
-            g2d.drawLine(GRID_X, y, GRID_X + GRID_WIDTH, y);
-        }
     }
 
     private int countSkySuns() {
@@ -376,10 +360,10 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
         if (!isInsideGrid(mouseX, mouseY)) {
             return;
         }
-        int x = GRID_X + (int)Math.round(hoverCol * GRID_CELL_WIDTH);
-        int y = GRID_Y + (int)Math.round(hoverRow * GRID_CELL_HEIGHT);
-        int w = (int)Math.round(GRID_CELL_WIDTH);
-        int h = (int)Math.round(GRID_CELL_HEIGHT);
+        int x = GRID_X + hoverCol * (GRID_CELL_WIDTH + GRID_CELL_GAP_X);
+        int y = GRID_Y + (int)Math.round(hoverRow * GRID_CELL_HEIGHT) + 8;
+        int w = GRID_CELL_WIDTH;
+        int h = (int)Math.round(GRID_CELL_HEIGHT) - 16;
         if ("Shovel".equals(selectedPlant) || grid[hoverRow][hoverCol] == 0) {
             g.setColor(new Color(0, 255, 0, 80));
         } else {
@@ -560,23 +544,6 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
         } else {
             hoverCol = -1;
             hoverRow = -1;
-        }
-    }
-    private void handleFriendlyZombies() {
-        for (Zombie friendlyZombie : zombies) {
-            if (!friendlyZombie.isFriendly() || friendlyZombie.isDead()) {
-                continue;
-            }
-            for (Zombie target : zombies) {
-                if (target != friendlyZombie &&
-                    !target.isFriendly() &&
-                    !target.isDead() &&
-                    Math.abs(target.getY() - friendlyZombie.getY()) <= 35 &&
-                    Math.abs(target.getX() - friendlyZombie.getX()) <= 35) {
-                    friendlyZombie.attackOtherZombie(target);
-                    break;
-                }
-            }
         }
     }
     public void returnToMenu(){

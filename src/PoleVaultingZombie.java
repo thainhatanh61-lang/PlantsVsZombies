@@ -6,7 +6,7 @@ public class PoleVaultingZombie extends Zombie {
     }
 
     @Override
-    public void update(java.util.List<Plant> plants) {
+    public void update(java.util.List<Plant> plants, java.util.List<Zombie> allZombies) {
         if (!vaulted) {
             for (Plant plant : plants) {
                 if (!plant.isDead() && Math.abs(y - plant.getY()) <= 35 && Math.abs(x - plant.getX()) <= 35) {
@@ -16,6 +16,6 @@ public class PoleVaultingZombie extends Zombie {
                 }
             }
         }
-        super.update(plants);
+        super.update(plants, allZombies);
     }
 }

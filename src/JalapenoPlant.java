@@ -5,8 +5,9 @@ import java.util.List;
 
 public class JalapenoPlant extends Plant {
     private List<BufferedImage> idleFrames;
-    private BufferedImage fireImage;
+    private List<BufferedImage> fireFrames;
     private int frameIndex;
+    private int fireFrameIndex;
     private int frameTimer;
     private int fuseTimer;
     private int fireTimer;
@@ -24,15 +25,25 @@ public class JalapenoPlant extends Plant {
                 idleFrames.add(img);
             }
         }
-        fireImage = loadResourceImage("Screen/jalapenoFire.gif");
+        fireFrames = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            BufferedImage img = loadResourceImage("Plants/Jalapeno/JalapenoExplode/JalapenoExplode_" + i + ".png");
+            if (img != null) {
+                fireFrames.add(img);
+            }
+        }
     }
 
     @Override
     public void update(List<Zombie> zombies, List<Sun> suns) {
         frameTimer++;
-        if (frameTimer >= 4 && !idleFrames.isEmpty()) {
+        if (frameTimer >= 4) {
             frameTimer = 0;
-            frameIndex = (frameIndex + 1) % idleFrames.size();
+            if (!activated && !idleFrames.isEmpty()) {
+                frameIndex = (frameIndex + 1) % idleFrames.size();
+            } else if (activated && !fireFrames.isEmpty()) {
+                fireFrameIndex = (fireFrameIndex + 1) % fireFrames.size();
+            }
         }
 
         if (!activated) {
@@ -64,8 +75,8 @@ public class JalapenoPlant extends Plant {
 
         if (activated) {
             for (int fireX = 105; fireX <= 805; fireX += 80) {
-                if (fireImage != null) {
-                    g2d.drawImage(fireImage, fireX - 40, y - 50, 90, 80, null);
+                if (!fireFrames.isEmpty()) {
+                    g2d.drawImage(fireFrames.get(fireFrameIndex), fireX - 40, y - 50, 90, 100, null);
                 } else {
                     g.setColor(new Color(255, 80, 0, 150));
                     g.fillRect(fireX - 40, y - 35, 80, 50);
@@ -73,7 +84,7 @@ public class JalapenoPlant extends Plant {
             }
         }
 
-        if (!idleFrames.isEmpty()) {
+        if (!activated && !idleFrames.isEmpty()) {
             g2d.drawImage(idleFrames.get(frameIndex), x - 25, y - 35, 50, 60, null);
         }
         if (!activated) {
