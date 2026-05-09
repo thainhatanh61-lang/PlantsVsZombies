@@ -70,6 +70,9 @@ public abstract class Plant {
     public void takeDamage(int damage){
         health-=damage;
     }
+    public boolean canBeEaten(){
+        return true;
+    }
     public int getX() {
         return x;
     }

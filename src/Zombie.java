@@ -83,6 +83,7 @@ public class Zombie {
         eating = false;
         for (Plant plant : plants) {
             if (!plant.isDead() &&
+                plant.canBeEaten() &&
                 Math.abs(y - plant.getY()) <= 35 &&
                 Math.abs(x - plant.getX()) <= 35) {
                 attackTimer++;
