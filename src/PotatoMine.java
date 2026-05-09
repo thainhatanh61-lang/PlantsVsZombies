@@ -11,7 +11,8 @@ public class PotatoMine extends Plant {
     private int stage;
     private int stageTimer;
     private boolean exploded;
-    private static final int EXPLOSION_RADIUS = 80;
+    private static final int ARM_TIME = 500;
+    private static final int EXPLOSION_RADIUS = 120;
 
     public PotatoMine(int x, int y) {
         super(x, y, 25, 1);
@@ -24,24 +25,22 @@ public class PotatoMine extends Plant {
     private void loadImages() {
         String base = "Plants/PotatoMine";
         
-        initFrames = new BufferedImage[1];
-        Image initImg = loadResourceImage(base + "/PotatoMineInit/PotatoMineInit_0.png");
-        if (initImg != null) {
-            initFrames[0] = initImg instanceof BufferedImage 
-                ? (BufferedImage) initImg
-                : toBufferedImage(initImg);
-        } else {
-            initFrames[0] = null;
+        initFrames = new BufferedImage[4];
+        for (int i = 0; i < 4; i++) {
+            Image img = loadResourceImage(base + "/unarmed/PotatoMineUnarmed_" + i + ".png");
+            if (img == null) {
+                img = loadResourceImage(base + "/PotatoMineInit/PotatoMineInit_0.png");
+            }
+            initFrames[i] = img instanceof BufferedImage ? (BufferedImage) img : (img != null ? toBufferedImage(img) : null);
         }
         
-        armedFrames = new BufferedImage[8];
-        for (int i = 0; i < 8; i++) {
-            Image img = loadResourceImage(base + "/PotatoMine/PotatoMine_" + i + ".png");
-            if (img != null) {
-                armedFrames[i] = img instanceof BufferedImage ? (BufferedImage) img : toBufferedImage(img);
-            } else {
-                armedFrames[i] = null;
+        armedFrames = new BufferedImage[4];
+        for (int i = 0; i < 4; i++) {
+            Image img = loadResourceImage(base + "/armed/PotatoMineArmed_" + i + ".png");
+            if (img == null) {
+                img = loadResourceImage(base + "/PotatoMine/PotatoMine_" + i + ".png");
             }
+            armedFrames[i] = img instanceof BufferedImage ? (BufferedImage) img : (img != null ? toBufferedImage(img) : null);
         }
         
         explodeFrames = new BufferedImage[1];
@@ -81,7 +80,7 @@ public class PotatoMine extends Plant {
     public void update(List<Zombie> zombies, List<Sun> suns) {
         if (stage == 0) {
             stageTimer++;
-            if (stageTimer >= 120) {
+            if (stageTimer >= ARM_TIME) {
                 stage = 1;
                 stageTimer = 0;
             }
@@ -94,7 +93,7 @@ public class PotatoMine extends Plant {
                     stageTimer = 0;
                     for (Zombie z : zombies) {
                         if (!z.isDead() && Math.hypot(x - z.getX(), y - z.getY()) <= EXPLOSION_RADIUS) {
-                            z.takeDamage(100);
+                            z.takeDamage(1800);
                         }
                     }
                     break;
@@ -116,8 +115,11 @@ public class PotatoMine extends Plant {
         BufferedImage img = null;
         int drawWidth = 50, drawHeight = 50;
         
-        if (stage == 0 && initFrames[0] != null) {
-            img = initFrames[0];
+        if (stage == 0) {
+            int frameIndex = (stageTimer / 10) % initFrames.length;
+            if (initFrames[frameIndex] != null) {
+                img = initFrames[frameIndex];
+            }
         } else if (stage == 1) {
             int frameIndex = (stageTimer / 10) % armedFrames.length;
             if (armedFrames[frameIndex] != null) {
@@ -136,5 +138,15 @@ public class PotatoMine extends Plant {
         if (stage < 2) {
             drawHealthBar(g);
         }
+    }
+
+    @Override
+    public void takeDamage(int damage) {
+        // Potato Mine is not eaten by zombies in this version.
+    }
+
+    @Override
+    public boolean canBeEaten() {
+        return false;
     }
 }

@@ -8,7 +8,7 @@ import java.util.Random;
 import java.util.List;
 import javax.swing.JButton;
 
-public class GamePanel extends JPanel implements ActionListener, MouseListener{
+public class GamePanel extends JPanel implements ActionListener, MouseListener, MouseMotionListener{
     private List<Sun> suns;
     private Random random;
     private Timer timer;
@@ -24,9 +24,17 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
     private String[] plantNames;
     private int[] plantCosts;
     private ImageIcon[] plantCardIcons;
+    private ImageIcon[] plantMoveIcons;
+    private int[] plantRechargeTimes;
+    private int[] plantCooldowns;
+    private BufferedImage shovelImage;
     private BufferedImage backgroundImage;
     private BufferedImage chooserBackground;
     private JButton bMenu;
+    private int mouseX;
+    private int mouseY;
+    private int hoverRow = -1;
+    private int hoverCol = -1;
 
     // Background crop: source rect in the 1400x600 image
     private static final int BG_SRC_X = 230;
@@ -55,11 +63,13 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         lawnMowers = new ArrayList<>();
         random = new Random();
         addMouseListener(this);
+        addMouseMotionListener(this);
         setFocusable(true);
         timer= new Timer(30,this);
         timer.start();
         setupPlantRoster();
         loadCardIcons();
+        shovelImage = Plant.loadResourceImage("UI/shovel.jpg");
         if ("night".equals(gameMode)) {
             backgroundImage = Plant.loadResourceImage("Items/Background/Background_1.jpg");
         } else {
@@ -92,21 +102,32 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         if ("night".equals(gameMode)) {
             plantNames = new String[]{"Sunshroom", "Puffshroom", "Scaredyshroom", "Wallnut", "CherryBomb", "Iceshroom", "PotatoMine", "Hypnoshroom"};
             plantCosts = new int[]{25, 0, 25, 50, 150, 75, 25, 75};
+            plantRechargeTimes = new int[]{233, 233, 233, 1000, 1667, 1667, 1000, 1000};
         } else {
             plantNames = new String[]{"Sunflower", "Peashooter", "Wallnut", "PotatoMine", "Jalapeno", "Chomper", "CherryBomb", "Spikeweed"};
             plantCosts = new int[]{50, 100, 50, 25, 125, 150, 150, 100};
+            plantRechargeTimes = new int[]{233, 233, 1000, 1000, 1667, 1000, 1667, 233};
         }
     }
 
     private void loadCardIcons() {
         plantCardIcons = new ImageIcon[plantNames.length];
+        plantMoveIcons = new ImageIcon[plantNames.length];
+        plantCooldowns = new int[plantNames.length];
         for (int i = 0; i < plantNames.length; i++) {
             BufferedImage cardImage = Plant.loadResourceImage("UI/SeedChooser/Cards/" + plantNames[i] + "_card.png");
+            BufferedImage moveImage = Plant.loadResourceImage("UI/SeedChooser/Cards/" + plantNames[i] + "_card_move.png");
             plantCardIcons[i] = cardImage != null ? new ImageIcon(cardImage) : new ImageIcon();
+            plantMoveIcons[i] = moveImage != null ? new ImageIcon(moveImage) : plantCardIcons[i];
         }
     }
     @Override
     public void actionPerformed(ActionEvent e){
+        for (int i = 0; i < plantCooldowns.length; i++) {
+            if (plantCooldowns[i] > 0) {
+                plantCooldowns[i]--;
+            }
+        }
         skySunTimer++;
         if (skySunTimer >= 500 && countSkySuns() < 3){
             skySunTimer = 0;
@@ -225,6 +246,11 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
                 g.setColor(new Color(80, 80, 80, 120));
                 g.fillRect(cardX, cardY, cardW, cardH);
             }
+            if (plantCooldowns[i] > 0) {
+                int cooldownHeight = (int)(cardH * (plantCooldowns[i] / (double)plantRechargeTimes[i]));
+                g.setColor(new Color(0, 0, 0, 130));
+                g.fillRect(cardX, cardY, cardW, cooldownHeight);
+            }
             if (plantNames[i].equals(selectedPlant)) {
                 g.setColor(new Color(255, 255, 0, 100));
                 g.fillRect(cardX, cardY, cardW, cardH);
@@ -236,13 +262,19 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         cardX += 10;
         g.setColor(new Color(139, 90, 43));
         g.fillRect(cardX, cardY, cardW, cardH);
-        g.setColor(Color.LIGHT_GRAY);
-        g.setFont(new Font("Arial", Font.BOLD, 11));
-        g.drawString("Shovel", cardX + 3, cardY + 40);
+        if (shovelImage != null) {
+            g.drawImage(shovelImage, cardX, cardY, cardW, cardH, null);
+        } else {
+            g.setColor(Color.LIGHT_GRAY);
+            g.setFont(new Font("Arial", Font.BOLD, 11));
+            g.drawString("Shovel", cardX + 3, cardY + 40);
+        }
         if ("Shovel".equals(selectedPlant)) {
             g.setColor(new Color(255, 255, 0, 100));
             g.fillRect(cardX, cardY, cardW, cardH);
         }
+
+        drawHoverCell(g);
 
         // Draw plants, zombies, suns
         for (LawnMower lawnMower : lawnMowers) {
@@ -257,6 +289,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         for (Sun sun:suns){
             sun.draw(g);
         }
+        drawCursorImage(g);
     }
 
     private boolean isInsideGrid(int x, int y) {
@@ -315,11 +348,54 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
         return count;
     }
 
-    private int getPlantCost(String name) {
+    private void drawHoverCell(Graphics g) {
+        if (selectedPlant == null || hoverRow < 0 || hoverCol < 0) {
+            return;
+        }
+        if (!isInsideGrid(mouseX, mouseY)) {
+            return;
+        }
+        int x = GRID_X + (int)Math.round(hoverCol * GRID_CELL_WIDTH);
+        int y = GRID_Y + (int)Math.round(hoverRow * GRID_CELL_HEIGHT);
+        int w = (int)Math.round(GRID_CELL_WIDTH);
+        int h = (int)Math.round(GRID_CELL_HEIGHT);
+        if ("Shovel".equals(selectedPlant) || grid[hoverRow][hoverCol] == 0) {
+            g.setColor(new Color(0, 255, 0, 80));
+        } else {
+            g.setColor(new Color(255, 0, 0, 80));
+        }
+        g.fillRect(x, y, w, h);
+    }
+
+    private void drawCursorImage(Graphics g) {
+        if (selectedPlant == null) {
+            return;
+        }
+        if ("Shovel".equals(selectedPlant)) {
+            if (shovelImage != null) {
+                g.drawImage(shovelImage, mouseX - 20, mouseY - 20, 40, 40, null);
+            }
+            return;
+        }
+        int index = getPlantIndex(selectedPlant);
+        if (index >= 0 && plantMoveIcons[index].getImage() != null) {
+            g.drawImage(plantMoveIcons[index].getImage(), mouseX - 25, mouseY - 35, 50, 70, null);
+        }
+    }
+
+    private int getPlantIndex(String name) {
         for (int i = 0; i < plantNames.length; i++) {
             if (plantNames[i].equals(name)) {
-                return plantCosts[i];
+                return i;
             }
+        }
+        return -1;
+    }
+
+    private int getPlantCost(String name) {
+        int index = getPlantIndex(name);
+        if (index >= 0) {
+            return plantCosts[index];
         }
         return 9999;
     }
@@ -360,6 +436,15 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
     public void mouseClicked(MouseEvent e){
         int mx= e.getX();
         int my= e.getY();
+        mouseX = mx;
+        mouseY = my;
+        updateHoverCell(mx, my);
+
+        if (SwingUtilities.isRightMouseButton(e)) {
+            selectedPlant = null;
+            repaint();
+            return;
+        }
         for (int i=0; i<suns.size(); i++){
             if (suns.get(i).contains(mx, my)){
                 sunPoints+=25;
@@ -374,7 +459,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
             int cardSpacing = 51;
             for (int i = 0; i < plantNames.length; i++) {
                 if (mx>=cardX && mx<cardX+cardW) {
-                    if (sunPoints >= plantCosts[i]) {
+                    if (sunPoints >= plantCosts[i] && plantCooldowns[i] == 0) {
                         selectedPlant = plantNames[i];
                     }
                     return;
@@ -389,6 +474,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
             int row = getRowFromY(my);
             if (row >= 0 && row < GRID_ROWS && col >= 0 && col < GRID_COLUMNS) {
                 if ("Shovel".equals(selectedPlant)) {
+                    boolean removedPlant = false;
                     for (int i=0; i<plants.size(); i++) {
                         Plant plant = plants.get(i);
                         int plantCol = getColumnFromX(plant.getX());
@@ -397,8 +483,12 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
                             plants.remove(i);
                             grid[row][col] = 0;
                             selectedPlant = null;
+                            removedPlant = true;
                             break;
                         }
+                    }
+                    if (!removedPlant) {
+                        selectedPlant = null;
                     }
                 } else if (grid[row][col] == 0) {
                     Plant plant=null;
@@ -412,10 +502,16 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
                         plants.add(plant);
                         grid[row][col]=1;
                         sunPoints-=cost;
+                        int plantIndex = getPlantIndex(selectedPlant);
+                        if (plantIndex >= 0) {
+                            plantCooldowns[plantIndex] = plantRechargeTimes[plantIndex];
+                        }
                         selectedPlant=null;
                     }
                 }
             }
+        } else if (selectedPlant != null) {
+            selectedPlant = null;
         }
     }
 
@@ -426,6 +522,24 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener{
     @Override public void mouseEntered(MouseEvent e){
     }
     @Override public void mouseExited(MouseEvent e){
+    }
+    @Override public void mouseMoved(MouseEvent e){
+        mouseX = e.getX();
+        mouseY = e.getY();
+        updateHoverCell(mouseX, mouseY);
+        repaint();
+    }
+    @Override public void mouseDragged(MouseEvent e){
+        mouseMoved(e);
+    }
+    private void updateHoverCell(int x, int y) {
+        if (isInsideGrid(x, y)) {
+            hoverCol = getColumnFromX(x);
+            hoverRow = getRowFromY(y);
+        } else {
+            hoverCol = -1;
+            hoverRow = -1;
+        }
     }
     public void returnToMenu(){
         JFrame frame= (JFrame) SwingUtilities.getWindowAncestor(this);
