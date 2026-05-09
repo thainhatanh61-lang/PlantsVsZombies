@@ -28,9 +28,16 @@ public class Zombie {
     protected boolean lostHead;
     protected boolean dying;
     protected int dyingTimer;
+    protected boolean burning;
+    protected int burnTimer;
+    protected int frozenTimer;
+    protected int chilledTimer;
+    protected int chillMoveTimer;
+    protected BufferedImage burnImage;
+    protected BufferedImage iceTrapImage;
 
     public Zombie(int x, int y) {
-        this(x, y, 200, 1);
+        this(x, y, ZombieStats.NORMAL, 1);
     }
 
     protected Zombie(int x, int y, int health, int speed) {
@@ -44,6 +51,8 @@ public class Zombie {
         this.lostHead = false;
         this.dying = false;
         loadImages();
+        burnImage = Plant.loadResourceImage("Effects/burntZombie.gif");
+        iceTrapImage = Plant.loadResourceImage("Plants/IceShroom/IceShroomTrap/IceShroomTrap_0.png");
     }
 
     protected void loadImages() {
@@ -67,6 +76,14 @@ public class Zombie {
     }
 
     public void update(List<Plant> plants) {
+        if (burning) {
+            burnTimer++;
+            if (burnTimer >= 35) {
+                dead = true;
+            }
+            return;
+        }
+
         if (dying) {
             dyingTimer++;
             frameTimer++;
@@ -76,6 +93,14 @@ public class Zombie {
                 if (dieFrames == null || frameIndex >= dieFrames.length) {
                     dead = true;
                 }
+            }
+            return;
+        }
+
+        if (frozenTimer > 0) {
+            frozenTimer--;
+            if (frozenTimer == 0) {
+                chilledTimer = 167;
             }
             return;
         }
@@ -96,7 +121,16 @@ public class Zombie {
             }
         }
         if (!eating) {
-            x -= speed;
+            if (chilledTimer > 0) {
+                chilledTimer--;
+                chillMoveTimer++;
+                if (chillMoveTimer >= 2) {
+                    chillMoveTimer = 0;
+                    x -= speed;
+                }
+            } else {
+                x -= speed;
+            }
         }
 
         // Lost head starts when zombie is low on health.
@@ -146,6 +180,20 @@ public class Zombie {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
+        if (burning) {
+            if (burnImage != null) {
+                g2d.drawImage(burnImage, x - 35, y - 80, 70, 100, null);
+            } else {
+                g.setColor(Color.DARK_GRAY);
+                g.fillRect(x - 20, y - 70, 40, 70);
+            }
+            return;
+        }
+
+        if (frozenTimer > 0 && iceTrapImage != null) {
+            g2d.drawImage(iceTrapImage, x - 35, y - 15, 70, 30, null);
+        }
+
         BufferedImage[] currentFrames = getCurrentFrames();
         if (currentFrames != null && currentFrames.length > 0) {
             int idx = frameIndex % currentFrames.length;
@@ -154,6 +202,11 @@ public class Zombie {
                     x - drawWidth / 2, y - drawHeight + 30,
                     drawWidth, drawHeight, null);
             }
+        }
+
+        if (frozenTimer > 0) {
+            g.setColor(new Color(0, 100, 255, 100));
+            g.fillRect(x - drawWidth / 2, y - drawHeight + 30, drawWidth, drawHeight);
         }
 
         // Health bar
@@ -172,4 +225,14 @@ public class Zombie {
     public int getHealth() { return health; }
     public boolean isDead() { return dead; }
     public void takeDamage(int damage) { health -= damage; }
+    public void freeze(int freezeTime, int chillTime) {
+        frozenTimer = freezeTime;
+        chilledTimer = chillTime;
+    }
+    public void burnKill() {
+        health = 0;
+        burning = true;
+        burnTimer = 0;
+        dying = false;
+    }
 }
