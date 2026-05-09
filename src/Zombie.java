@@ -36,6 +36,8 @@ public class Zombie {
     protected boolean friendly;
     protected BufferedImage burnImage;
     protected BufferedImage iceTrapImage;
+    protected BufferedImage iceSnowImage;
+    protected BufferedImage hypnoImage;
 
     public Zombie(int x, int y) {
         this(x, y, ZombieStats.NORMAL, 1);
@@ -54,6 +56,8 @@ public class Zombie {
         loadImages();
         burnImage = Plant.loadResourceImage("Screen/burntZombie.gif");
         iceTrapImage = Plant.loadResourceImage("Plants/IceShroom/IceShroomTrap/IceShroomTrap_0.png");
+        iceSnowImage = Plant.loadResourceImage("Plants/IceShroom/IceShroomSnow/IceShroomSnow_0.png");
+        hypnoImage = Plant.loadResourceImage("Plants/HypnoShroom/HypnoShroom/HypnoShroom_0.png");
     }
 
     protected void loadImages() {
@@ -230,13 +234,11 @@ public class Zombie {
             }
         }
 
-        if (frozenTimer > 0) {
-            g.setColor(new Color(0, 100, 255, 100));
-            g.fillRect(x - drawWidth / 2, y - drawHeight + 30, drawWidth, drawHeight);
+        if (frozenTimer > 0 && iceSnowImage != null) {
+            g2d.drawImage(iceSnowImage, x - 45, y - drawHeight + 15, 90, 90, null);
         }
-        if (friendly) {
-            g.setColor(new Color(180, 60, 255, 80));
-            g.fillRect(x - drawWidth / 2, y - drawHeight + 30, drawWidth, drawHeight);
+        if (friendly && hypnoImage != null) {
+            g2d.drawImage(hypnoImage, x - 18, y - drawHeight + 5, 36, 36, null);
         }
 
         // Health bar
