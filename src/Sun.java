@@ -7,20 +7,30 @@ public class Sun {
     private int targetY;
     private boolean collected = false;
     private boolean skySun;
+    private int value;
     private int timer = 0;
     private List<BufferedImage> frames;
     private int frameIndex;
     private int frameTimer;
     
     public Sun(int x, int y, int targetY) {
-        this(x, y, targetY, false);
+        this(x, y, targetY, false, 25);
     }
 
     public Sun(int x, int y, int targetY, boolean skySun) {
+        this(x, y, targetY, skySun, 25);
+    }
+
+    public Sun(int x, int y, int targetY, int value) {
+        this(x, y, targetY, false, value);
+    }
+
+    public Sun(int x, int y, int targetY, boolean skySun, int value) {
         this.x = x;
         this.y = y;
         this.targetY = targetY;
         this.skySun = skySun;
+        this.value = value;
         loadImages();
     }
     
@@ -87,6 +97,9 @@ public class Sun {
     }
     public boolean isSkySun(){
         return skySun;
+    }
+    public int getValue(){
+        return value;
     }
     public int getX(){ 
         return x;

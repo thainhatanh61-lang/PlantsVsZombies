@@ -33,6 +33,7 @@ public class Zombie {
     protected int frozenTimer;
     protected int chilledTimer;
     protected int chillMoveTimer;
+    protected boolean friendly;
     protected BufferedImage burnImage;
     protected BufferedImage iceTrapImage;
 
@@ -105,6 +106,22 @@ public class Zombie {
             return;
         }
 
+        if (friendly) {
+            eating = false;
+            if (chilledTimer > 0) {
+                chilledTimer--;
+                chillMoveTimer++;
+                if (chillMoveTimer >= 2) {
+                    chillMoveTimer = 0;
+                    x += speed;
+                }
+            } else {
+                x += speed;
+            }
+            animateCurrentFrames();
+            return;
+        }
+
         eating = false;
         for (Plant plant : plants) {
             if (!plant.isDead() &&
@@ -147,7 +164,10 @@ public class Zombie {
             dyingTimer = 0;
         }
 
-        // Animate
+        animateCurrentFrames();
+    }
+
+    private void animateCurrentFrames() {
         frameTimer++;
         if (frameTimer >= 4) {
             frameTimer = 0;
@@ -208,6 +228,10 @@ public class Zombie {
             g.setColor(new Color(0, 100, 255, 100));
             g.fillRect(x - drawWidth / 2, y - drawHeight + 30, drawWidth, drawHeight);
         }
+        if (friendly) {
+            g.setColor(new Color(180, 60, 255, 80));
+            g.fillRect(x - drawWidth / 2, y - drawHeight + 30, drawWidth, drawHeight);
+        }
 
         // Health bar
         if (!dying) {
@@ -225,6 +249,20 @@ public class Zombie {
     public int getHealth() { return health; }
     public boolean isDead() { return dead; }
     public void takeDamage(int damage) { health -= damage; }
+    public boolean isFriendly() { return friendly; }
+    public void hypnotize() {
+        friendly = true;
+        eating = false;
+        attackTimer = 0;
+    }
+    public void attackOtherZombie(Zombie target) {
+        attackTimer++;
+        eating = true;
+        if (attackTimer >= 30) {
+            target.takeDamage(20);
+            attackTimer = 0;
+        }
+    }
     public void freeze(int freezeTime, int chillTime) {
         frozenTimer = freezeTime;
         chilledTimer = chillTime;

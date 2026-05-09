@@ -182,6 +182,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
                 i--;
             }
         }
+        handleFriendlyZombies();
         for (LawnMower lawnMower : lawnMowers) {
             lawnMower.update(zombies);
         }
@@ -209,7 +210,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
                     break;
                 }
             }
-            if (zombie.getX()<10 && !protectedByMower){
+            if (!zombie.isFriendly() && zombie.getX()<10 && !protectedByMower){
                 timer.stop();
                 int choice= JOptionPane.showConfirmDialog(this,"Game Over! Zombies ate your brain!\n\nDo you want to go back to the Menu?", "Game Over", JOptionPane.YES_NO_CANCEL_OPTION);
                 if (choice== JOptionPane.YES_OPTION){
@@ -433,13 +434,13 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
             case "Jalapeno":
                 return new JalapenoPlant(x, y);
             case "Chomper":
-                return new BasicPlant(x, y, 150, 300, "Plants/Chomper/Chomper/Chomper_", 13);
+                return new ChomperPlant(x, y);
             case "CherryBomb":
-                return new BasicPlant(x, y, 150, 300, "Plants/CherryBomb/CherryBomb_", 7);
+                return new CherryBombPlant(x, y);
             case "Spikeweed":
-                return new BasicPlant(x, y, 100, 300, "Plants/Spikeweed/Spikeweed/Spikeweed_", 19);
+                return new SpikeweedPlant(x, y);
             case "Sunshroom":
-                return new BasicPlant(x, y, 25, 300, "Plants/SunShroom/SunShroom/SunShroom_", 10);
+                return new SunshroomPlant(x, y);
             case "Puffshroom":
                 return new MushroomShooterPlant(x, y, false);
             case "Scaredyshroom":
@@ -447,7 +448,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
             case "Iceshroom":
                 return new IceShroomPlant(x, y);
             case "Hypnoshroom":
-                return new BasicPlant(x, y, 75, 300, "Plants/HypnoShroom/HypnoShroom/HypnoShroom_", 15);
+                return new HypnoShroomPlant(x, y);
         }
         return null;
     }
@@ -467,7 +468,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
         }
         for (int i=0; i<suns.size(); i++){
             if (suns.get(i).contains(mx, my)){
-                sunPoints+=25;
+                sunPoints += suns.get(i).getValue();
                 suns.get(i).collect();
                 break;
             }
@@ -559,6 +560,23 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
         } else {
             hoverCol = -1;
             hoverRow = -1;
+        }
+    }
+    private void handleFriendlyZombies() {
+        for (Zombie friendlyZombie : zombies) {
+            if (!friendlyZombie.isFriendly() || friendlyZombie.isDead()) {
+                continue;
+            }
+            for (Zombie target : zombies) {
+                if (target != friendlyZombie &&
+                    !target.isFriendly() &&
+                    !target.isDead() &&
+                    Math.abs(target.getY() - friendlyZombie.getY()) <= 35 &&
+                    Math.abs(target.getX() - friendlyZombie.getX()) <= 35) {
+                    friendlyZombie.attackOtherZombie(target);
+                    break;
+                }
+            }
         }
     }
     public void returnToMenu(){
