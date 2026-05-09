@@ -3,7 +3,7 @@
 ## Details
 
 **Created by:
-[Nguyen Tri Nhan] (https://github.com/Teru127), [Nguyen Le Hoang Long] (https://github.com/longnguyen9030) and [Thai Nhat Anh] (https://github.com/thainhatanh61-lang)
+[Nguyen Tri Nhan](https://github.com/Teru127), [Nguyen Le Hoang Long](https://github.com/longnguyen9030) and [Thai Nhat Anh](https://github.com/thainhatanh61-lang)**
 
 This is a clone of the strategy video game, [Plants vs. Zombies](https://en.wikipedia.org/wiki/Plants_vs._Zombies), originally developed by PopCap Games.
 
