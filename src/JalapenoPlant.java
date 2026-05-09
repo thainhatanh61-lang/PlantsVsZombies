@@ -13,8 +13,8 @@ public class JalapenoPlant extends Plant {
     private int fireTimer;
     private boolean activated;
     private static final int FUSE_TIME = 100;
-    private static final int FIRE_TIME = 167;
-    private static final int FIRE_DAMAGE_PER_TICK = 54;
+    private static final int FIRE_TIME = 32;
+    private static final int FIRE_DAMAGE = 1800;
 
     public JalapenoPlant(int x, int y) {
         super(x, y, 125, 300);
@@ -51,17 +51,17 @@ public class JalapenoPlant extends Plant {
             if (fuseTimer >= FUSE_TIME) {
                 activated = true;
                 fireTimer = FIRE_TIME;
-            }
-        } else {
-            fireTimer--;
-            for (Zombie zombie : zombies) {
-                if (!zombie.isDead() && Math.abs(zombie.getY() - y) <= 35) {
-                    zombie.takeDamage(FIRE_DAMAGE_PER_TICK);
-                    if (zombie.getHealth() <= 0) {
-                        zombie.burnKill();
+                for (Zombie zombie : zombies) {
+                    if (!zombie.isDead() && Math.abs(zombie.getY() - y) <= 35) {
+                        zombie.takeDamage(FIRE_DAMAGE);
+                        if (zombie.getHealth() <= 0) {
+                            zombie.burnKill();
+                        }
                     }
                 }
             }
+        } else {
+            fireTimer--;
             if (fireTimer <= 0) {
                 health = 0;
             }
