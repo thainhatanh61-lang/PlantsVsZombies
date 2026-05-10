@@ -10,6 +10,7 @@ public class IceShroomPlant extends Plant {
     private int fuseTimer;
     private int removeTimer;
     private boolean activated;
+    private BufferedImage snowImage;
     private static final int FUSE_TIME = 100;
     private static final int FREEZE_TIME = 333;
     private static final int CHILL_TIME = 167;
@@ -23,6 +24,7 @@ public class IceShroomPlant extends Plant {
                 frames.add(img);
             }
         }
+        snowImage = loadResourceImage("Plants/IceShroom/IceShroomSnow/IceShroomSnow_0.png");
     }
 
     @Override
@@ -57,8 +59,9 @@ public class IceShroomPlant extends Plant {
             g2d.drawImage(frames.get(frameIndex), x - 25, y - 30, 50, 50, null);
         }
         if (activated) {
-            g.setColor(new Color(120, 200, 255, 120));
-            g.fillOval(x - 45, y - 45, 90, 90);
+            if (snowImage != null) {
+                g2d.drawImage(snowImage, x - 80, y - 80, 160, 160, null);
+            }
         } else {
             drawHealthBar(g);
         }
